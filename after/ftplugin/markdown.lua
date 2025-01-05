@@ -1,4 +1,4 @@
-require 'markdown-functions'
+require 'plugins.markdown-functions'
 vim.api.nvim_set_keymap('v', '<C-k>', ':lua MarkdownLink()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-k>', ':lua InsertMarkdownLink()<cr>', { noremap = true, silent = true })
 
