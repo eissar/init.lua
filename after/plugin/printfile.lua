@@ -6,7 +6,7 @@ function PrintFile()
   local home = os.getenv 'USERPROFILE'
 
   --local cssfile = 'C:/Users/eshaa/Downloads/tufte.css'
-  local cssfile = home .. '/Dropbox/Application_Files/css/tufte.css'
+  local cssfile = home .. '/Dropbox/Application_Files/css/pico.blue.css'
 
   local function file_exists(name)
     local f = io.open(name, 'r')

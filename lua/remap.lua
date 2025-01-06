@@ -1,6 +1,5 @@
 -- [[ Basic Keymaps ]] See `:help vim.keymap.set()`
 
-vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>', { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
 
 -- There is a popular mapping that will show the :ls result above a prompt: <https://vi.stackexchange.com/questions/14829/close-multiple-buffers-interactively>
 vim.keymap.set('n', '<leader>ls', ':ls<CR>:b<space>')
@@ -41,7 +40,7 @@ vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = '[F]ilename completion' })
 
 --[[ Lua function keybindings ]]
 vim.api.nvim_set_keymap('n', 'gX', ':lua getNodeAsUrl()<cr>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>prf', ':lua printFile()<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>', { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
 vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ifn', ':lua insertFilename()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>it', ':lua insertAbbreviatedTime()<cr>', { noremap = true, silent = true })
