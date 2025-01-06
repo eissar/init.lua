@@ -16,7 +16,6 @@ vim.g.maplocalleader = ' '
   update git
 ]]
 --
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -45,6 +44,7 @@ vim.opt.rtp:prepend(lazypath)
     :Lazy update
 ]]
 --
+---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
     -- Detect tabstop and shiftwidth automatically
     {
@@ -186,29 +186,29 @@ require('lazy').setup({
             -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
             --#startRegion Override `select_rm_file_cmd`
-            local augroup = vim.api.nvim_create_augroup('TSInstallOverride', { clear = true })
-            vim.api.nvim_create_autocmd('BufReadPost', {
-                group = augroup,
-                pattern = '*', -- Run for all file types
-                once = true, -- Only run once per Neovim session
-                callback = function()
+            -- local augroup = vim.api.nvim_create_augroup('TSInstallOverride', { clear = true })
+            -- vim.api.nvim_create_autocmd('BufReadPost', {
+            --     group = augroup,
+            --     pattern = '*', -- Run for all file types
+            --     once = true, -- Only run once per Neovim session
+            --     callback = function()
 
-                    ---@diagnostic disable-next-line: duplicate-set-field
-                    require('nvim-treesitter.shell_command_selectors').select_install_rm_cmd = function(file, info_msg)
-                        if vim.fn.has 'win32' == 1 then
-                            return {
-                                cmd = 'pwsh.exe',
-                                opts = {
-                                    -- Add the '/F' flag to force deletion
-                                    args = { '-c', 'Remove-Item', '-Path', file, '-Force', '-Recurse' },
-                                },
-                                info = info_msg,
-                                err = 'Could not delete ' .. file,
-                            }
-                        end
-                    end
-                end,
-            })
+            --         ---@diagnostic disable-next-line: duplicate-set-field
+            --         require('nvim-treesitter.shell_command_selectors').select_install_rm_cmd = function(file, info_msg)
+            --             if vim.fn.has 'win32' == 1 then
+            --                 return {
+            --                     cmd = 'pwsh.exe',
+            --                     opts = {
+            --                         -- Add the '/F' flag to force deletion
+            --                         args = { '-c', 'Remove-Item', '-Path', file, '-Force', '-Recurse' },
+            --                     },
+            --                     info = info_msg,
+            --                     err = 'Could not delete ' .. file,
+            --                 }
+            --             end
+            --         end
+            --     end,
+            -- })
             --#endRegion
 
             ---@diagnostic disable-next-line: missing-fields
@@ -222,9 +222,6 @@ require('lazy').setup({
             --
             --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
             --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-
-
-
         end,
     },
     -- colorscheme
