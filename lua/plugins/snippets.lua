@@ -9,12 +9,6 @@ local insert = luasnip.insert_node
 -- local utilEvents = require 'luasnip.util.events'
 local absoluteIndexer = require 'luasnip.nodes.absolute_indexer'
 
-
-
-
-
-
-
 --#region LUA
 local a1 = snippet("function", snippet_node(0, {
   txt("local function ("),

@@ -11,3 +11,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+-- create autocmd for terminal so we can set config with ftplugin
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "term://*",
+  command = "set filetype=term",
+  group = vim.api.nvim_create_augroup("TermBuffers", { clear = true }),
+})

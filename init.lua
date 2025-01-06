@@ -63,6 +63,7 @@ require('lazy').setup({
             },
         },
     },
+
     -- Show pending keybinds as they are typed
     {
         'folke/which-key.nvim',
@@ -240,6 +241,9 @@ require('lazy').setup({
             vim.cmd.hi 'Comment gui=none'
         end,
     },
+    -- interactive repl for configured languages
+    { 'Vigemus/iron.nvim', },
+
     -- automatically add plugins, configuration, etc from `lua/lazy-plugins/*.lua`
     {
         import = 'lazy-plugins', -- './lua/lazy-plugins/'
@@ -275,3 +279,4 @@ require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
 require 'autocmd' -- './lua/settings.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
+require 'plugins.iron-nvim' -- './lua/plugins/snippets.lua'
