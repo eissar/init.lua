@@ -277,6 +277,6 @@ require('lazy').setup({
 
 require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
-require 'autocmd' -- './lua/settings.lua'
+require 'autocmd' -- './lua/autocmd.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
 require 'plugins.iron-nvim' -- './lua/plugins/snippets.lua'

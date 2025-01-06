@@ -13,7 +13,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- create autocmd for terminal so we can set config with ftplugin
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd("BufWinEnter", {
   pattern = "term://*",
   command = "set filetype=term",
   group = vim.api.nvim_create_augroup("TermBuffers", { clear = true }),

@@ -4,11 +4,16 @@ iron.setup {
     config = {
         -- Whether a repl should be discarded or not
         scratch_repl = true,
+
+    -- If the repl buffer is listed. Set to true so we can navigate more easily
+        buflisted = true,
+        -- Automatically closes the repl window on process end
+        -- close_window_on_exit = true,
         -- Your repl definitions come here
         repl_definition = {
             ps1 = {
                 -- Can be a table or a function that returns a table (see below)
-                command = {"pwsh.exe"}
+                command = {"pwsh.exe", "-NoLogo"}
             },
             python = {
                 command = { "python3" },  -- or { "ipython", "--no-autoindent" }
@@ -17,6 +22,19 @@ iron.setup {
         },
         -- How the repl window will be displayed
         -- See below for more information
-        --repl_open_cmd = require('iron.view').bottom(40),
+        -- repl_open_cmd = require('iron.view').bottom(30),
+        --
+
+        repl_open_cmd = require('iron.view').split("40%", {
+            number = false,
+            relativenumber = false,
+        })
     },
+    keymaps = {
+        send_motion = "<leader>sc",
+        send_file = "<leader>isf",
+        -- TODO: Move this to keymaps
+    }
 }
+
+vim.api.nvim_set_keymap('n', '<leader>iF', ':lua require("iron.core").focus_on("ps1") <cr>', { noremap = true, silent = true, desc = '[I]ron [F]ocus' })
