@@ -5,7 +5,7 @@ iron.setup {
         -- Whether a repl should be discarded or not
         scratch_repl = true,
 
-    -- If the repl buffer is listed. Set to true so we can navigate more easily
+        -- If the repl buffer is listed. Set to true so we can navigate more easily
         buflisted = true,
         -- Automatically closes the repl window on process end
         -- close_window_on_exit = true,
@@ -13,7 +13,8 @@ iron.setup {
         repl_definition = {
             ps1 = {
                 -- Can be a table or a function that returns a table (see below)
-                command = {"pwsh.exe", "-NoLogo"}
+                command = {"pwsh.exe", "-NoLogo"},
+                ignore_eval = true,  -- Hide echoing of typed (executed) lines TODO: Does not work.
             },
             python = {
                 command = { "python3" },  -- or { "ipython", "--no-autoindent" }
@@ -28,7 +29,9 @@ iron.setup {
         repl_open_cmd = require('iron.view').split("40%", {
             number = false,
             relativenumber = false,
-        })
+        }),
+        ignore_blank_lines = true,
+        ignore_eval = true,  -- Hide echoing of typed (executed) lines TODO: Does not work.
     },
     keymaps = {
         send_motion = "<leader>sc",
