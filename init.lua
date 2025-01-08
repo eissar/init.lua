@@ -11,9 +11,10 @@ vim.g.maplocalleader = ' '
 ]]
 --
 
---[[ fix for nvim-treesitter[lua]: Failed to execute the following command:
-
-  update git
+--[[ 
+    fix for nvim-treesitter[lua]: Failed to execute the following command:
+    update git?
+    doesn't work. 
 ]]
 --
 -- Set to true if you have a Nerd Font installed and selected in the terminal
@@ -249,6 +250,8 @@ require('lazy').setup({
         import = 'lazy-plugins', -- './lua/lazy-plugins/'
         -- Status Line: ./lua/lazy-plugins/mini-nvim.lua
     },
+
+    ---@diagnostic disable-next-line: missing-fields
 }, {
     ui = {
         -- If you are using a Nerd Font: set icons to an empty table which will use the
