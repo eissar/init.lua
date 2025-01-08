@@ -183,8 +183,6 @@ return {
           single_file_support = true,
           settings = {
             powershell = {
-              
-              Developer = { editorServicesLog = 'Debug' },
               CodeFormatting = {
                 -- [[ You can get more code formatting settings here:
                 -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
@@ -194,15 +192,10 @@ return {
               },
               scriptAnalysis = {
                 enable = true,
-                settingsPath = 'C:/Users/eshaa/Downloads/PSScriptAnalyzerSettings.psd1'
+                settingsPath = [[C:/Users/eshaa/Downloads/PSScriptAnalyzerSettings.psd1]]
 
               },
-              command = "pwsh",
-              args = {
-                "-NoProfile",
-                "-Command",
-                "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
-              },
+              -- command = "pwsh", args = { "-NoProfile", "-Command", "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}", },
             },
           },
         },
