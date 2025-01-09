@@ -45,8 +45,8 @@ vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = 
 vim.api.nvim_set_keymap('n', '<leader>ifn', ':lua insertFilename()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>it', ':lua insertAbbreviatedTime()<cr>', { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>pv', ':Ex<cr>') -- go to start of line
-
+-- Keybinding for opening Ex file browser
+vim.keymap.set('n', '<leader>pv', ':Ex<cr>', { noremap = true, silent = true, desc = '[P]roject [V]iew' })
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
