@@ -3,6 +3,7 @@
 
 -- There is a popular mapping that will show the :ls result above a prompt: <https://vi.stackexchange.com/questions/14829/close-multiple-buffers-interactively>
 vim.keymap.set('n', '<leader>ls', ':ls<CR>:b<space>')
+vim.api.nvim_set_keymap('n', '<C-v>', '"+p', { noremap = true })
 
 -- goto start/end of line
 vim.api.nvim_set_keymap('n', 'gs', '^', { noremap = true, silent = true, desc = '[G]oto Start' })
