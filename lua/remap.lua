@@ -9,8 +9,8 @@ vim.api.nvim_set_keymap('n', 'gs', '^', { noremap = true, silent = true, desc = 
 vim.keymap.set('n', 'ge', '$') -- go to end of line
 -- Also consider, Goto Append or Goto Insert gA / gI to mirror insert/ append 
 
-vim.api.nvim_set_keymap('n', '<A-j>', ':m +1<cr>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<A-k>', ':m -2<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<M-j>', ':m +1<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<M-k>', ':m -2<cr>', { noremap = true, silent = true })
 
 -- vim.keymap.set("n", "<leader>po",":lua showPopupPickList('/OneDrive/Catalog/note-taking.notebook/hom.md')<cr>", { noremap = true, silent = true })
 
@@ -54,6 +54,9 @@ vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { desc = '[G]oto [D]ef
 vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { desc = '[G]oto [D]eclaration' })
 vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { desc = '[G]oto [I]mplementation' })
 
+-- marks
+
+
 -- Exit terminal mode in the builtin terminal. This won't work in all terminal emulators/tmux/etc.
 --  You normally need to press <C-\><C-n>
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -92,6 +95,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
     vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
 
     -- vim.keymap.set('n', '<C-p>', builtin.git_files, {})
     -- Slightly advanced example of overriding default behavior and theme

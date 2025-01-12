@@ -8,8 +8,7 @@ vim.g.maplocalleader = ' '
   ```powershell
    ls C:\Users\eshaa\AppData\Local\nvim-data\shada\main.shada.tmp* | del
   ```
-]]
---
+]]--
 
 --[[ 
     fix for nvim-treesitter[lua]: Failed to execute the following command:
@@ -257,10 +256,14 @@ require('lazy').setup({
                     inline = {
                         adapter = "ollama",
                     },
+                    suggestion = {
+                        auto_trigger = true
+                    },
                 },
                 adapters = {
                     ollama = function()
                         return require("codecompanion.adapters").extend("ollama", {
+                            -- https://github.com/jcorbin/home/blob/0e18734fcd559a6c3093dd55fe5be75270bd255b/.config/nvim/lua/plugins/ai.lua#L13
                             env = {
                                 url = "http://workstation:11434",
                                 chat_url = "/v1/chat/completions",
@@ -269,7 +272,6 @@ require('lazy').setup({
                     end,
                 },
             })
-
             -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
             -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
             -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")

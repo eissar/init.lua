@@ -1,4 +1,4 @@
-function runSelection()
+function RunSelection()
     local function get_visual_selection()
       local s_start = vim.fn.getpos("'<")
       local s_end = vim.fn.getpos("'>")
@@ -13,13 +13,12 @@ function runSelection()
       return table.concat(lines, '')
     end
 
-
     vim.ui.select({ "Confirm", "Cancel" }, { prompt = "Run selected text in powershell?" }, function(choice)
         if choice == "Confirm" then
             local selected_text = get_visual_selection()
             local run_command = [[:tabe term://powershell "]] .. selected_text .. [["]]
-            vim.cmd(run_command)   
-            vim.cmd(':startinsert')                      
+            vim.cmd(run_command)
+            vim.cmd(':startinsert')
         end
     end)
 

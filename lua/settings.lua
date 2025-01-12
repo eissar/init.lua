@@ -15,6 +15,10 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.foldmethod = 'indent'
 
+
+
+
+
 -- set color of cursor 
 -- see :h highlight :h highlight-group
 vim.cmd 'hi Cursor guibg=#626262'
@@ -82,3 +86,4 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 8
+
