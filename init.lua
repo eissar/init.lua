@@ -20,7 +20,7 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
---#region install Lazy plugin manager ]]
+--#region install Lazy plugin manager
 --  See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.uv.fs_stat(lazypath) then
@@ -33,6 +33,7 @@ end
 ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 --#endregion
+
 
 --#region Manage Plugins
 --[[
@@ -244,6 +245,41 @@ require('lazy').setup({
     },
     -- interactive repl for configured languages
     { 'Vigemus/iron.nvim', },
+
+    {
+        'olimorris/codecompanion.nvim',
+        config = function() -- This is the function that runs, AFTER loading
+            require("codecompanion").setup({
+                strategies = {
+                    chat = {
+                        adapter = "ollama",
+                    },
+                    inline = {
+                        adapter = "ollama",
+                    },
+                },
+                adapters = {
+                    ollama = function()
+                        return require("codecompanion.adapters").extend("ollama", {
+                            env = {
+                                url = "http://workstation:11434",
+                                chat_url = "/v1/chat/completions",
+                            },
+                        })
+                    end,
+                },
+            })
+
+            -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+            -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+            -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+            -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+            -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
+            -- vim.cmd([[cab cc CodeCompanion]])
+
+        end
+
+    },
 
     -- automatically add plugins, configuration, etc from `lua/lazy-plugins/*.lua`
     {
