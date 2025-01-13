@@ -164,13 +164,6 @@ return {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
-        marksman = {},
-        -- lemminx = {},
-        -- clangd = {},
-        gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
         powershell_es = {
           capabilities = capabilities,
           bundle_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services',
@@ -194,22 +187,29 @@ return {
             },
           },
         },
-        -- From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
-        --
-        -- You can also set the bundled PSScriptAnalyzer's custom rule path like so:
-        -- local custom_settings_path = home_directory .. '/PSScriptAnalyzerSettings.psd1'
-        -- require('lspconfig')['powershell_es'].setup
-        -- 	bundle_path = bundle_path,
-        -- 	on_attach = on_attach,
-        -- 	settings = { powershell = { scriptAnalysis = { settingsPath = custom_settings_path } } }
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
-        --
+        --[[
+          From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
+
+          You can also set the bundled PSScriptAnalyzer's custom rule path like so:
+          local custom_settings_path = home_directory .. '/PSScriptAnalyzerSettings.psd1'
+          require('lspconfig')['powershell_es'].setup
+          bundle_path = bundle_path,
+          on_attach = on_attach,
+          settings = { powershell = { scriptAnalysis = { settingsPath = custom_settings_path } } }
+        ]]--
+        marksman = {},
+        gopls = {},
+        pyright = {},
+        sqls = {
+          single_file_support = true,
+          -- do not configure here. edit config at: ['~\.config\sqls\config.yml']
+          -- connections = {
+          --     alias = "sakila_master",
+          --     driver = "sqlite3",
+          --     dataSourceName = "file:/Users/eshaa/sakila_master.db",
+          --   }
+        },
+        tsserver = {},
         eslint = {
           filetypes = { 'javascript' },
           --  filetypes (table): Override the default list of associated filetypes for the server
@@ -228,6 +228,9 @@ return {
             },
           },
         },
+        -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
+        -- lemminx = {},
+        -- clangd = {},
       }
 
       -- Ensure the servers and tools above are installed
