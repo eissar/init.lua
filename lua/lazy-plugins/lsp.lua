@@ -209,7 +209,7 @@ return {
           --     dataSourceName = "file:/Users/eshaa/sakila_master.db",
           --   }
         },
-        tsserver = {},
+        -- tsserver = {},
         eslint = {
           filetypes = { 'javascript' },
           --  filetypes (table): Override the default list of associated filetypes for the server
