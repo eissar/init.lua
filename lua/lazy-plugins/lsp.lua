@@ -180,7 +180,7 @@ return {
               },
               scriptAnalysis = {
                 enable = true,
-                settingsPath = [[C:/Users/eshaa/Downloads/PSScriptAnalyzerSettings.psd1]]
+                settingsPath = os.getenv('CLOUD_DIR') .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]]
 
               },
               -- command = "pwsh", args = { "-NoProfile", "-Command", "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}", },
@@ -266,7 +266,7 @@ return {
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    -- event = { 'BufWritePre' },
+    event = { 'BufWritePre' },
     cmd = { 'ConformInfo' },
     keys = {
       {
