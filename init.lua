@@ -8,7 +8,8 @@ vim.g.maplocalleader = ' '
   ```powershell
    ls C:\Users\eshaa\AppData\Local\nvim-data\shada\main.shada.tmp* | del
   ```
-]]--
+]]
+--
 
 --[[ 
     fix for nvim-treesitter[lua]: Failed to execute the following command:
@@ -32,7 +33,6 @@ end
 ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 --#endregion
-
 
 --#region Manage Plugins
 --[[
@@ -64,7 +64,6 @@ require('lazy').setup({
             },
         },
     },
-
     -- Show pending keybinds as they are typed
     {
         'folke/which-key.nvim',
@@ -111,10 +110,6 @@ require('lazy').setup({
             { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
         },
         config = function()
-            -- Telescope is a fuzzy finder that comes with a lot of different things that
-            -- it can fuzzy find! It's more than just a "file finder", it can search
-            -- many different aspects of Neovim, your workspace, LSP, and more!
-            --
             -- The easiest way to use Telescope, is to start by doing something like:
             --  :Telescope help_tags
             --
@@ -184,7 +179,6 @@ require('lazy').setup({
             -- run = ':TSUpdate',
         },
         config = function(_, opts)
-
             -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
             --#startRegion Override `select_rm_file_cmd`
@@ -216,7 +210,7 @@ require('lazy').setup({
             ---@diagnostic disable-next-line: missing-fields
             require('nvim-treesitter.configs').setup(opts)
 
-             require 'nvim-treesitter.install'.prefer_git = false
+            require('nvim-treesitter.install').prefer_git = false
             -- There are additional nvim-treesitter modules that you can use to interact
             -- with nvim-treesitter. You should go explore a few and see what interests you:
             --
@@ -243,46 +237,37 @@ require('lazy').setup({
         end,
     },
     -- interactive repl for configured languages
-    { 'Vigemus/iron.nvim', },
+    { 'Vigemus/iron.nvim' },
 
     {
         'olimorris/codecompanion.nvim',
         config = function() -- This is the function that runs, AFTER loading
-            require("codecompanion").setup({
+            require('codecompanion').setup {
                 strategies = {
                     chat = {
-                        adapter = "ollama",
+                        adapter = 'ollama',
                     },
                     inline = {
-                        adapter = "ollama",
+                        adapter = 'ollama',
                     },
                     suggestion = {
-                        auto_trigger = true
+                        auto_trigger = true,
                     },
                 },
                 adapters = {
                     ollama = function()
-                        return require("codecompanion.adapters").extend("ollama", {
+                        return require('codecompanion.adapters').extend('ollama', {
                             -- https://github.com/jcorbin/home/blob/0e18734fcd559a6c3093dd55fe5be75270bd255b/.config/nvim/lua/plugins/ai.lua#L13
                             env = {
-                                url = "http://workstation:11434",
-                                chat_url = "/v1/chat/completions",
+                                url = 'http://workstation:11434',
+                                chat_url = '/v1/chat/completions',
                             },
                         })
                     end,
                 },
-            })
-            -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
-            -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
-            -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
-            -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
-            -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
-            -- vim.cmd([[cab cc CodeCompanion]])
-
-        end
-
+            }
+        end,
     },
-
     -- automatically add plugins, configuration, etc from `lua/lazy-plugins/*.lua`
     {
         import = 'lazy-plugins', -- './lua/lazy-plugins/'

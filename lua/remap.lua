@@ -1,6 +1,5 @@
 -- [[ Basic Keymaps ]] See `:help vim.keymap.set()`
 
-
 -- There is a popular mapping that will show the :ls result above a prompt: <https://vi.stackexchange.com/questions/14829/close-multiple-buffers-interactively>
 vim.keymap.set('n', '<leader>ls', ':ls<CR>:b<space>')
 vim.api.nvim_set_keymap('n', '<C-v>', '"+p', { noremap = true })
@@ -8,13 +7,12 @@ vim.api.nvim_set_keymap('n', '<C-v>', '"+p', { noremap = true })
 -- goto start/end of line
 vim.api.nvim_set_keymap('n', 'gs', '^', { noremap = true, silent = true, desc = '[G]oto Start' })
 vim.keymap.set('n', 'ge', '$') -- go to end of line
--- Also consider, Goto Append or Goto Insert gA / gI to mirror insert/ append 
+-- Also consider, Goto Append or Goto Insert gA / gI to mirror insert/ append
 
 vim.api.nvim_set_keymap('n', '<M-j>', ':m +1<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<M-k>', ':m -2<cr>', { noremap = true, silent = true })
 
 -- vim.keymap.set("n", "<leader>po",":lua showPopupPickList('/OneDrive/Catalog/note-taking.notebook/hom.md')<cr>", { noremap = true, silent = true })
-
 
 -- netrw sucks so open file under cursor. gX until I find a better hotkey.
 vim.keymap.set('n', 'gX', function()
@@ -57,7 +55,6 @@ vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { desc = '[G]oto [
 
 -- marks
 
-
 -- Exit terminal mode in the builtin terminal. This won't work in all terminal emulators/tmux/etc.
 --  You normally need to press <C-\><C-n>
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
@@ -65,8 +62,7 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- open powershell in a new tab
 vim.keymap.set('n', '<leader>pwsh', function()
     vim.cmd [[:tabe term://pwsh -nol]]
-end, { desc = 'PowerShell'})
-
+end, { desc = 'PowerShell' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -79,9 +75,8 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
--- Telescope bindings
-;(function()
+vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' }); -- Telescope bindings
+(function()
     -- See `:help telescope.builtin`
     local builtin = require 'telescope.builtin'
     vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
@@ -125,12 +120,14 @@ end)()
 
 -- CodeCompanionChat <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
 vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
-
-
+-- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+-- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+-- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+-- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+-- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
+-- vim.cmd([[cab cc CodeCompanion]])
 
 -- # KEYMAPS SET IN OTHER FILES:
 -- <leader>
 --
---
-
-
+-- map commands in lua/lazy-plugins/lsp.lua
