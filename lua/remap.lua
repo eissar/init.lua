@@ -42,7 +42,7 @@ vim.api.nvim_set_keymap('n', 'gX', ':lua getNodeAsUrl()<cr>', { noremap = true, 
 vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>', { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
 vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ifn', ':lua insertFilename()<cr>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>it', ':lua insertAbbreviatedTime()<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>it', ':lua InsertAbbreviatedTime()<cr>', { noremap = true, silent = true })
 
 -- Keybinding for opening Ex file browser
 vim.keymap.set('n', '<leader>pv', ':Ex<cr>', { noremap = true, silent = true, desc = '[P]roject [V]iew' })
@@ -61,7 +61,7 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 
 -- open powershell in a new tab
 vim.keymap.set('n', '<leader>pwsh', function()
-    vim.cmd [[:tabe term://pwsh -nol]]
+    vim.cmd [[:vsp term://pwsh -nol]]
 end, { desc = 'PowerShell' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
@@ -75,9 +75,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' }); -- Telescope bindings
-(function()
-    -- See `:help telescope.builtin`
+vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Telescope bindings; see `:help telescope.builtin`
+do
     local builtin = require 'telescope.builtin'
     vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
     vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
@@ -116,7 +117,28 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
     vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
-end)()
+
+    vim.keymap.set('n', '<leader>sn', function()
+        builtin.find_files { cwd = vim.fn.stdpath 'config' }
+    end, { desc = '[S]earch [N]eovim files' })
+    -- our picker function: colors
+    local colors = function(opts)
+        local pickers = require 'telescope.pickers'
+        local finders = require 'telescope.finders'
+        local conf = require('telescope.config').values
+        opts = opts or {}
+        pickers
+            .new(opts, {
+                prompt_title = 'colors',
+                finder = finders.new_table {
+                    results = GetMarkdownCatalog(),
+                },
+                sorter = conf.generic_sorter(opts),
+            })
+            :find()
+    end
+    vim.keymap.set('n', '<leader>sc', colors)
+end
 
 -- CodeCompanionChat <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
 vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
@@ -125,7 +147,7 @@ vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'Code
 -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
 -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
 -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
--- vim.cmd([[cab cc CodeCompanion]])
+vim.cmd [[cab cc CodeCompanion]]
 
 -- # KEYMAPS SET IN OTHER FILES:
 -- <leader>

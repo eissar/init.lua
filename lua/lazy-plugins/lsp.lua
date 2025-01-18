@@ -235,6 +235,8 @@ return {
                 -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
                 -- lemminx = {},
                 -- clangd = {},
+                -- :h omnisharp
+                omnisharp = {},
             }
 
             --[[

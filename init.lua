@@ -241,8 +241,14 @@ require('lazy').setup({
 
     {
         'olimorris/codecompanion.nvim',
+        -- if you have, problems, replace vim.cmd.undojoin() with if vim.fn.undotree().seq_cur > 1 then vim.cmd.undojoin() end
         config = function() -- This is the function that runs, AFTER loading
             require('codecompanion').setup {
+                display = {
+                    diff = {
+                        provider = 'mini_diff',
+                    },
+                },
                 strategies = {
                     chat = {
                         adapter = 'ollama',
@@ -261,6 +267,13 @@ require('lazy').setup({
                             env = {
                                 url = 'http://workstation:11434',
                                 chat_url = '/v1/chat/completions',
+                            },
+                            schema = {
+                                -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
+                                name = 'phi4',
+                                model = {
+                                    default = 'phi4',
+                                },
                             },
                         })
                     end,

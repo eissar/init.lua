@@ -185,7 +185,8 @@ table.insert(
         })
     )
 )
-table.insert(markdown_snips, snippet('cmt', { txt '<!---->' }))
+
+table.insert(markdown_snips, snippet('raindrop', { txt 'https://app.raindrop.io/my/0', insert(1, '') }))
 
 luasnip.add_snippets('markdown', markdown_snips)
 --#endregion
