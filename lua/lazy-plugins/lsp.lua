@@ -203,7 +203,9 @@ return {
                         gofumpt = true,
                     },
                 },
-                pyright = {},
+                pyright = {
+                    single_file_support = true,
+                },
                 sqls = {
                     single_file_support = true,
                     -- do not configure here. edit config at: ['~\.config\sqls\config.yml']

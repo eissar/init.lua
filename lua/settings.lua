@@ -15,11 +15,9 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.foldmethod = 'indent'
 
+vim.opt.list = false
 
-
-
-
--- set color of cursor 
+-- set color of cursor
 -- see :h highlight :h highlight-group
 vim.cmd 'hi Cursor guibg=#626262'
 
@@ -43,9 +41,9 @@ vim.opt.shellquote = ''
 vim.opt.shellxquote = ''
 
 -- Sync clipboard between OS and Neovim.
-    --  Schedule the setting after `UiEnter` because it can increase startup-time.
-    --  Remove this option if you want your OS clipboard to remain independent.
-    --  See `:help 'clipboard'`
+--  Schedule the setting after `UiEnter` because it can increase startup-time.
+--  Remove this option if you want your OS clipboard to remain independent.
+--  See `:help 'clipboard'`
 vim.schedule(function()
     vim.opt.clipboard = 'unnamedplus'
 end)
@@ -86,4 +84,3 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 8
-

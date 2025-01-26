@@ -238,7 +238,6 @@ require('lazy').setup({
     },
     -- interactive repl for configured languages
     { 'Vigemus/iron.nvim' },
-
     {
         'olimorris/codecompanion.nvim',
         -- if you have, problems, replace vim.cmd.undojoin() with if vim.fn.undotree().seq_cur > 1 then vim.cmd.undojoin() end
