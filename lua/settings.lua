@@ -36,7 +36,7 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 
 -- Use pwsh as terminal/ shell --
 vim.opt.shell = 'pwsh.exe'
-vim.opt.shellcmdflag = '-OutputFormat Text -nol -c'
+vim.opt.shellcmdflag = '-of Text -nol -c'
 vim.opt.shellquote = ''
 vim.opt.shellxquote = ''
 

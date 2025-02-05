@@ -110,8 +110,42 @@ return {
                     -- word under your cursor when your cursor rests there for a little while.
                     --    See `:help CursorHold` for information about when this is executed
                     --
+                    function GetTableLen(tbl)
+                        local getN = 0
+                        for n in pairs(tbl) do
+                            getN = getN + 1
+                        end
+                        return getN
+                    end
+
                     -- When you move your cursor, the highlights will be cleared (the second autocommand).
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
+                    if client and type(client.name) == 'string' then
+                        local b = vim.api.nvim_get_current_buf()
+                        local clients = vim.lsp.get_clients { bunr = b }
+                        -- client.name for client in clients
+                        local names_len = 0
+                        local names = {}
+                        for _, c in ipairs(clients) do
+                            local nm = c.name
+                            if nm == 'lua_ls' or nm == 'gopls' then
+                                return
+                            else
+                                names_len = names_len + 1
+                                -- filter only LSPs that don't show any notification when they're loaded
+                                table.insert(names, nm)
+                            end
+                        end
+
+                        local clean_names = ''
+                        if names_len == 1 then
+                            clean_names = names[1]
+                        else
+                            clean_names = table.concat(names, ', ')
+                        end
+                        require('fidget').notify([[Lsp Loaded: ]] .. clean_names, vim.log.levels.INFO, { ttl = 0 })
+                    end
+
                     if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
                         local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
                         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -166,37 +200,50 @@ return {
             local servers = {
                 powershell_es = {
                     capabilities = capabilities,
-                    bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services',
+                    bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
                     shell = 'pwsh.exe',
                     single_file_support = true,
                     settings = {
+                        -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
                         powershell = {
-                            CodeFormatting = {
-                                -- [[ You can get more code formatting settings here:
-                                -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
-                                preset = 'OTBS',
+                            scriptAnalysis = {
+                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
+                                enable = true,
+                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
+                                settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+                            },
+                            codeFormatting = {
+                                --enable = false
+                                -- [[ You can get more code formatting settings here: -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
+                                Preset = 'OTBS',
                                 useCorrectCasing = true,
                                 openBraceOnSameLine = true,
                             },
-                            scriptAnalysis = {
-                                enable = true,
-                                settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]],
-                            },
-                            -- command = "pwsh", args = { "-NoProfile", "-Command", "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}", },
+                            -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+                            -- },
+
+                            -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
+                            --command = 'pwsh',
+                            --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
+                            -- command = 'pwsh',
+                            -- args = {
+                            --     '-NoProfile',
+                            --     '-Command',
+                            --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
+                            -- },
                         },
                     },
                 },
-                --[[
-          From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
+                --[[ 
+                    From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
 
-          You can also set the bundled PSScriptAnalyzer's custom rule path like so:
-          local custom_settings_path = home_directory .. '/PSScriptAnalyzerSettings.psd1'
-          require('lspconfig')['powershell_es'].setup
-          bundle_path = bundle_path,
-          on_attach = on_attach,
-          settings = { powershell = { scriptAnalysis = { settingsPath = custom_settings_path } } }
-        ]]
-                --
+                    You can also set the bundled PSScriptAnalyzer's custom rule path like so:
+                    local custom_settings_path = home_directory .. '/PSScriptAnalyzerSettings.psd1'
+                    require('lspconfig')['powershell_es'].setup
+                    bundle_path = bundle_path,
+                    on_attach = on_attach,
+                    settings = { powershell = { scriptAnalysis = { settingsPath = custom_settings_path } } }
+                --]]
                 marksman = {},
                 gopls = {
                     settings = {
@@ -220,6 +267,7 @@ return {
                     filetypes = { 'javascript' },
                     --  filetypes (table): Override the default list of associated filetypes for the server
                 },
+
                 lua_ls = {
                     -- cmd = {...},
                     -- filetypes = { ...},
@@ -229,16 +277,25 @@ return {
                             completion = {
                                 callSnippet = 'Replace',
                             },
+                            format = {
+                                enable = true,
+                                defaultConfig = {
+                                    ---@type "keep"|"always"|"same_line"|"replace_with_newline"|"never"
+                                    end_statement_with_semicolon = 'always',
+                                    quote_style = 'single',
+                                },
+                            },
                             -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
                             -- diagnostics = { disable = { 'missing-fields' } },
                         },
                     },
                 },
+                html = {},
                 -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
                 -- lemminx = {},
                 -- clangd = {},
                 -- :h omnisharp
-                omnisharp = {},
+                -- omnisharp = {},
             }
 
             --[[
@@ -288,12 +345,13 @@ return {
             },
         },
         opts = {
+            log_level = vim.log.levels.TRACE,
             notify_on_error = true,
             format_on_save = function(bufnr)
                 -- Disable "format_on_save lsp_fallback" for languages that don't
                 -- have a well standardized coding style. You can add additional
                 -- languages here or re-enable it for the disabled ones.
-                local disable_filetypes = { c = true, cpp = true }
+                local disable_filetypes = { c = true, cpp = true, templ = true }
                 return {
                     timeout_ms = 500,
                     lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
@@ -301,9 +359,8 @@ return {
             end,
             formatters_by_ft = {
                 lua = { 'stylua' },
+                templ = nil,
                 -- Conform can also run multiple formatters sequentially
-                -- python = { "isort", "black" },
-                --
                 -- You can use 'stop_after_first' to run the first available formatter from the list
                 javascript = { 'prettierd', 'prettier', stop_after_first = true },
             },

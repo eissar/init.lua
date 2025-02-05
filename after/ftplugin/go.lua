@@ -1,2 +1,4 @@
-vim.api.nvim_set_option_value('tabstop', 2, { scope = 'local' })
-vim.api.nvim_set_option_value('expandtab', false, { scope = 'local' })
+vim.opt_local.tabstop = 2
+vim.opt_local.shiftwidth = 2
+vim.opt_local.expandtab = false
+vim.opt_local.list = false

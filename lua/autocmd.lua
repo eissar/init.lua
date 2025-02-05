@@ -38,3 +38,10 @@ vim.api.nvim_create_autocmd({ 'DirChanged', 'BufWinEnter', 'CmdlineLeave' }, {
 vim.api.nvim_create_autocmd('VimResized', {
     command = 'wincmd =',
 })
+
+vim.api.nvim_create_autocmd('User', {
+    pattern = 'LazyReload',
+    callback = function()
+        require('fidget').notify('Lazy Config reloaded', vim.log.levels.INFO)
+    end,
+})

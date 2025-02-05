@@ -36,6 +36,7 @@ vim.opt.rtp:prepend(lazypath)
 
 --#region Manage Plugins
 --[[
+--
   To check the current status of your plugins, run
     :Lazy
 
@@ -47,10 +48,19 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
-    -- Detect tabstop and shiftwidth automatically
+    -- Neovim plugin to animate the cursor with a smear (subtle)
     {
-        'tpope/vim-sleuth',
+        'sphamba/smear-cursor.nvim',
+        opts = {
+            cursor_color = '#CDCECF',
+            stiffness = 0.8,
+            trailing_stiffness = 0.62,
+            distance_stop_animating = 0.5,
+            hide_target_hack = false,
+        },
     },
+    -- Detect tabstop and shiftwidth automatically,
+    -- { 'tpope/vim-sleuth', },
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     {
         'lewis6991/gitsigns.nvim',
@@ -307,11 +317,20 @@ require('lazy').setup({
             lazy = '💤 ',
         },
     },
+    change_detection = {
+        -- automatically check for config file changes and reload the ui
+        enabled = true,
+        notify = false, -- get a notification when changes are found
+        -- custom notification is configured in ./lua/autocmd.lua
+    },
 })
 --#endregion
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- just throwing this in here  TODO: move
+vim.api.nvim_create_user_command('PopupWindow', PopupWindow, {})
 
 require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
