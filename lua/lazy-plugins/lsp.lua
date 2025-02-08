@@ -291,6 +291,14 @@ return {
                     },
                 },
                 html = {},
+                denols = {
+                    root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
+                    settings = {},
+                    init_options = {
+                        lint = true,
+                        unstable = true,
+                    },
+                },
                 -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
                 -- lemminx = {},
                 -- clangd = {},
