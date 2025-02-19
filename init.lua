@@ -48,6 +48,10 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
+    {
+        --'Decodetalkers/csharpls-extended-lsp.nvim',
+    },
+
     -- Neovim plugin to animate the cursor with a smear (subtle)
     {
         'sphamba/smear-cursor.nvim',

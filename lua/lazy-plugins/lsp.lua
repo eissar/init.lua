@@ -303,7 +303,57 @@ return {
                 -- lemminx = {},
                 -- clangd = {},
                 -- :h omnisharp
-                -- omnisharp = {},
+                --omnisharp = {
+                --    cmd = { 'C:/Users/eshaa/Dropbox/Application_Files/lsp/omnisharp/OmniSharp.exe', '--languageserver', '--hostPID', tostring(vim.fn.getpid()) },
+                --    settings = {
+                --        FormattingOptions = {
+                --            -- Enables support for reading code style, naming convention and analyzer
+                --            -- settings from .editorconfig.
+                --            EnableEditorConfigSupport = true,
+                --            -- Specifies whether 'using' directives should be grouped and sorted during
+                --            -- document formatting.
+                --            OrganizeImports = nil,
+                --        },
+                --        RoslynExtensionsOptions = {
+                --            -- Enables support for roslyn analyzers, code fixes and rulesets.
+                --            EnableAnalyzersSupport = nil,
+                --            enableDecompilationSupport = true,
+                --            enableImportCompletion = true,
+                --            enableAnalyzersSupport = true,
+                --            diagnosticWorkersThreadCount = 8,
+                --        },
+                --    },
+                --},
+                --csharp_ls = {
+                --    handlers = {
+                --        ['textDocument/definition'] = require('csharpls_extended').handler,
+                --        ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
+                --    },
+                --    --cmd = { csharp_ls },
+                --},
+                fsautocomplete = {
+                    cmd = { 'fsautocomplete', '--adaptive-lsp-server-enabled' },
+                    settings = {
+                        FSharp = {
+                            EnableReferenceCodeLens = true,
+                            ExternalAutocomplete = false,
+                            InterfaceStubGeneration = true,
+                            InterfaceStubGenerationMethodBody = 'failwith "Not Implemented"',
+                            InterfaceStubGenerationObjectIdentifier = 'this',
+                            Linter = true,
+                            RecordStubGeneration = true,
+                            RecordStubGenerationBody = 'failwith "Not Implemented"',
+                            ResolveNamespaces = true,
+                            SimplifyNameAnalyzer = true,
+                            UnionCaseStubGeneration = true,
+                            UnionCaseStubGenerationBody = 'failwith "Not Implemented"',
+                            UnusedDeclarationsAnalyzer = true,
+                            UnusedOpensAnalyzer = true,
+                            UseSdkScripts = true,
+                            keywordsAutocomplete = true,
+                        },
+                    },
+                },
             }
 
             --[[
