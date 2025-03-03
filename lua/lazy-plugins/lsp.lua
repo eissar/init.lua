@@ -19,6 +19,9 @@ return {
     -- Main LSP Configuration
     {
         'neovim/nvim-lspconfig',
+        opts = {
+            inlay_hints = { enabled = true },
+        },
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
             { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
@@ -248,20 +251,27 @@ return {
                 gopls = {
                     settings = {
                         gofumpt = true,
+                        --hints = { assignVariableTypes = true },
+                        experimentalPostfixCompletions = true,
+                        staticcheck = true,
+                        linksInHover = 'gopls',
+                        verboseOutput = true,
+                        usePlaceholders = true,
+                        completionBudget = '0ms', --unlimited
                     },
                 },
                 pyright = {
                     single_file_support = true,
                 },
-                sqls = {
-                    single_file_support = true,
-                    -- do not configure here. edit config at: ['~\.config\sqls\config.yml']
-                    -- connections = {
-                    --     alias = "sakila_master",
-                    --     driver = "sqlite3",
-                    --     dataSourceName = "file:/Users/eshaa/sakila_master.db",
-                    --   }
-                },
+                -- sqls = {
+                --     single_file_support = true,
+                --     -- do not configure here. edit config at: ['~\.config\sqls\config.yml']
+                --     -- connections = {
+                --     --     alias = "sakila_master",
+                --     --     driver = "sqlite3",
+                --     --     dataSourceName = "file:/Users/eshaa/sakila_master.db",
+                --     --   }
+                -- },
                 -- tsserver = {},
                 eslint = {
                     filetypes = { 'javascript' },
@@ -336,7 +346,7 @@ return {
                     settings = {
                         FSharp = {
                             EnableReferenceCodeLens = true,
-                            ExternalAutocomplete = false,
+                            ExternalAutocomplete = true,
                             InterfaceStubGeneration = true,
                             InterfaceStubGenerationMethodBody = 'failwith "Not Implemented"',
                             InterfaceStubGenerationObjectIdentifier = 'this',
@@ -474,6 +484,10 @@ return {
                     end,
                 },
                 completion = { completeopt = 'menu,menuone,noinsert' },
+                view = { docs = { auto_open = false } },
+                experimental = {
+                    ghost_text = true,
+                },
 
                 -- For an understanding of why these mappings were
                 -- chosen, you will need to read `:help ins-completion`
@@ -494,11 +508,13 @@ return {
                     --  This will expand snippets if the LSP sent a snippet.
                     ['<C-y>'] = cmp.mapping.confirm { select = true },
 
-                    -- If you prefer more traditional completion keymaps,
-                    -- you can uncomment the following lines
-                    --['<CR>'] = cmp.mapping.confirm { select = true },
-                    --['<Tab>'] = cmp.mapping.select_next_item(),
-                    --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+                    ['<C-g>'] = function()
+                        if cmp.visible_docs() then
+                            return cmp.close_docs()
+                        end
+
+                        return cmp.open_docs()
+                    end,
 
                     -- Manually trigger a completion from nvim-cmp.
                     --  Generally you don't need this, because nvim-cmp will display
@@ -536,6 +552,7 @@ return {
                     { name = 'nvim_lsp' },
                     { name = 'luasnip' },
                     { name = 'path' },
+                    { name = 'jupynium' },
                 },
             }
         end,

@@ -49,6 +49,15 @@ vim.opt.rtp:prepend(lazypath)
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
     {
+        'tpope/vim-fugitive',
+    },
+    {
+        'kiyoon/jupynium.nvim',
+        --opts = {},
+        --build = 'uv venv $CLOUD_DIR/Application_Files/.envs/jupynium/ && --python=3.13 && uv pip install . --python=$CLOUD_DIR/Application_Files/.envs/jupynium/bin/python',
+        build = 'uv pip install . --python=C:/Users/eshaa/Dropbox/Application_Files/.envs/jupynium/bin/python',
+    },
+    {
         --'Decodetalkers/csharpls-extended-lsp.nvim',
     },
 

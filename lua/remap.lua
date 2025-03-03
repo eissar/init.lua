@@ -54,6 +54,27 @@ vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { desc = '[G]oto [D]ef
 vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { desc = '[G]oto [D]eclaration' })
 vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { desc = '[G]oto [I]mplementation' })
 
+--vim.keymap.set('n', '<leader>ow', vim.cmd 'only', { desc = '[O]nly [I]mplementation' })
+vim.keymap.set('n', '<leader>zo', function()
+    -- Save the current cursor position
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+    -- Get the current file's path.  `%` expands to the current file path.
+    local current_file = vim.fn.expand '%'
+
+    -- Check if we have a filename (not an unnamed buffer)
+    if current_file ~= '' then
+        -- Open the current file in a new tab.
+        vim.cmd('tabnew ' .. current_file)
+
+        -- Restore the cursor position in the *new* tab.
+        vim.api.nvim_win_set_cursor(0, { row, col })
+        vim.cmd 'normal! zz' -- make cursor centered
+    end
+end, { noremap = true, desc = '[Z]oom [O]pen' })
+
+vim.keymap.set('n', '<leader>zc', ':tabclose<cr>', { desc = '[Z]oom [C]lose' })
+
 -- marks
 
 -- Exit terminal mode in the builtin terminal. This won't work in all terminal emulators/tmux/etc.
@@ -73,10 +94,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+--vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+--vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+--vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+--vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Telescope bindings; see `:help telescope.builtin`
 do
