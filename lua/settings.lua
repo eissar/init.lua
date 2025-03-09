@@ -13,7 +13,13 @@ vim.opt.relativenumber = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+
 vim.opt.foldmethod = 'indent'
+-- vim.opt.foldmethod = 'expr'
+-- vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+
+-- waiting for this to work
+-- vim.opt.foldexpr = 'v:lua.vim.lsp.foldexpr()'
 
 vim.opt.list = false
 
