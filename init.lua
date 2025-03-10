@@ -203,45 +203,14 @@ require('lazy').setup({
             -- run = ':TSUpdate',
         },
         config = function(_, opts)
-            -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-
-            --#startRegion Override `select_rm_file_cmd`
-            -- local augroup = vim.api.nvim_create_augroup('TSInstallOverride', { clear = true })
-            -- vim.api.nvim_create_autocmd('BufReadPost', {
-            --     group = augroup,
-            --     pattern = '*', -- Run for all file types
-            --     once = true, -- Only run once per Neovim session
-            --     callback = function()
-
-            --         ---@diagnostic disable-next-line: duplicate-set-field
-            --         require('nvim-treesitter.shell_command_selectors').select_install_rm_cmd = function(file, info_msg)
-            --             if vim.fn.has 'win32' == 1 then
-            --                 return {
-            --                     cmd = 'pwsh.exe',
-            --                     opts = {
-            --                         -- Add the '/F' flag to force deletion
-            --                         args = { '-c', 'Remove-Item', '-Path', file, '-Force', '-Recurse' },
-            --                     },
-            --                     info = info_msg,
-            --                     err = 'Could not delete ' .. file,
-            --                 }
-            --             end
-            --         end
-            --     end,
-            -- })
-            --#endRegion
-
             ---@diagnostic disable-next-line: missing-fields
             require('nvim-treesitter.configs').setup(opts)
 
             require('nvim-treesitter.install').prefer_git = false
             -- There are additional nvim-treesitter modules that you can use to interact
             -- with nvim-treesitter. You should go explore a few and see what interests you:
-            --
-            --    - TODO: Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-            --
-            --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-            --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+            -- Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
+            -- Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
         end,
     },
     -- colorscheme
