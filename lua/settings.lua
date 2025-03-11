@@ -42,7 +42,11 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 
 -- Use pwsh as terminal/ shell --
 vim.opt.shell = 'pwsh.exe'
-vim.opt.shellcmdflag = '-of Text -nol -c'
+vim.opt.shellcmdflag = [[-OutputFormat Text -NoLogo -c "$PSStyle.OutputRendering = 'PlainText';"]]
+
+-- -- does not work:
+-- vim.opt.shellcmdflag = [[-OutputFormat Text -NoLogo -c "$PSStyle.OutputRendering = 'PlainText';" -c]]
+
 vim.opt.shellquote = ''
 vim.opt.shellxquote = ''
 
