@@ -207,6 +207,23 @@ require('lazy').setup({
             require('nvim-treesitter.configs').setup(opts)
 
             require('nvim-treesitter.install').prefer_git = false
+
+            -- {lang}        (`string`) Language to use for the query
+            -- {query_name}  (`string`) Name of the query (e.g., "highlights")
+            -- {text}        (`string`) Query text (unparsed).
+            -- set({lang}, {query_name}, {text})                 *vim.treesitter.query.set()*
+            --     Sets the runtime query named {query_name} for {lang}
+            --
+            --vim.treesitter.query.set(
+            --    'go',
+            --    'folds',
+            --    [[;; inherits: go
+            --      ;; extends
+
+            --    ;(type_identifier) @type
+            --]]
+            --)
+
             -- There are additional nvim-treesitter modules that you can use to interact
             -- with nvim-treesitter. You should go explore a few and see what interests you:
             -- Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
