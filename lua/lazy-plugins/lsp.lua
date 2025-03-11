@@ -241,7 +241,7 @@ return {
                         },
                     },
                 },
-                --[[ 
+                --[[
                     From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
 
                     You can also set the bundled PSScriptAnalyzer's custom rule path like so:
@@ -500,6 +500,7 @@ return {
                 mapping = cmp.mapping.preset.insert {
                     -- Select the [n]ext item
                     ['<C-n>'] = cmp.mapping.select_next_item(),
+
                     -- Select the [p]revious item
                     ['<C-p>'] = cmp.mapping.select_prev_item(),
 
