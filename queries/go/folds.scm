@@ -22,7 +22,70 @@
  ;(block)
  ] @fold
 
-; only fold function block body (not nesting)
+
+;(
+;  (region_start (region_name)) @_start_name
+;  (_)+
+;  .
+;  (region_end (region_name)) @_end_name
+;  (#eq? @_start_name @_end_name)
+;)
+
+
+
+
+
+;(#make-range! @fold @start_region @end_region)
+
+; can we (comment) @fold; (var_declaration) @fold
+;(source_file
+;  ((comment) @_start (#lua-match? @_start "^// #region")) @fold
+;  ( (_)* @fold
+;    (#lua-match? @fold "^//(?! #end).")  ; Ensure we don't fold past the end region.  Crucial!
+;  )  ; The inner content is optional (empty regions).
+;  ;((comment) @_end (#lua-match? @_end "^// #endregion")) @fold
+;)
+
+
+(
+  [(region_start (region_name)@_start_name)] @fold
+  (_)* @fold
+  [(region_end (region_name) @_end_name)] @fold
+  (#any-eq? @_start_name @_end_name)
+)
+
+;(; overlapping region issue
+; [
+;  (
+;   (region_start (region_name) @start_name)
+;   (_)+ @fold  ; Capture any intervening nodes.
+;   .
+;   (region_end (region_name) @end_name)
+;   )
+;  ]
+; ;(#any-eq? @start_name @end_name)
+; )
+
+;(
+;(region_start (region_name)) @_start
+;(_)* @fold
+;(region_end (region_name)) @_end
+;(#eq? @_start @_end)
+;)
+
+;(
+; [
+;  (region_start (region_name)@_start_name)
+;  (_)+
+;  (region_end (region_name)@_end_name)
+; ] @fold
+;  (#any-eq? @_start_name @_end_name)
+;)
+
+
+
+
+; only fold function block body
 (function_declaration
   body: (block) @fold
   (#lua-match? @fold "^.*\n.*\n")
