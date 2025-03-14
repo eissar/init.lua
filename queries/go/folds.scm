@@ -22,8 +22,14 @@
  ;(block)
  ] @fold
 
+(
+  (region_start) @start_name
+  (_)+ @fold
+  (region_end) @end_name
+  (#match_region? @start_name @end_name)
+)
 
-;(
+;(; works/ no new predicate required
 ;  (region_start (region_name)) @_start_name
 ;  (_)+
 ;  .
@@ -47,12 +53,12 @@
 ;)
 
 
-(
-  [(region_start (region_name)@_start_name)] @fold
-  (_)* @fold
-  [(region_end (region_name) @_end_name)] @fold
-  (#any-eq? @_start_name @_end_name)
-)
+;(
+;  [(region_start (region_name)@_start_name)] @fold
+;  (_)* @fold
+;  [(region_end (region_name) @_end_name)] @fold
+;  (#any-eq? @_start_name @_end_name)
+;)
 
 ;(; overlapping region issue
 ; [

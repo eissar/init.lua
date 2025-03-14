@@ -11,10 +11,10 @@ vim.g.maplocalleader = ' '
 ]]
 --
 
---[[ 
+--[[
     fix for nvim-treesitter[lua]: Failed to execute the following command:
     update git?
-    doesn't work. 
+    doesn't work.
 ]]
 --
 -- Set to true if you have a Nerd Font installed and selected in the terminal
