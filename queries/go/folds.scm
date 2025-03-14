@@ -23,9 +23,9 @@
  ] @fold
 
 (
-  (region_start) @start_name
-  (_)+ @fold
-  (region_end) @end_name
+  (region_start) @start_name @fold
+  (_)* @fold
+  (region_end) @end_name @fold
   (#match_region? @start_name @end_name)
 )
 
