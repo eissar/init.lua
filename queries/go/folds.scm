@@ -9,6 +9,7 @@
  (type_switch_statement)
  (type_case)
  (for_statement)
+ ; remove func_literal,if_statement default behavior
  ;(func_literal)
  ;(if_statement)
  (import_declaration)
@@ -17,25 +18,36 @@
  (var_declaration)
  (composite_literal)
  (literal_element)
- ;; remove comments, block default behavior
- ;(comment)
- ;(block)
+ ; remove comments, block default behavior
+ (comment)
+ (block)
  ] @fold
 
-(
-  (region_start) @start_name @fold
-  (_)* @fold
-  (region_end) @end_name @fold
+(; fold c# regions
+  ((comment) @comment (#lua-match? @comment "^// #region")) @start_name
+  ((comment) @_end (#lua-match? @_end "^// #endregion")) @end_name @fold
   (#match_region? @start_name @end_name)
-)
+) @fold
 
-;(; works/ no new predicate required
-;  (region_start (region_name)) @_start_name
-;  (_)+
-;  .
-;  (region_end (region_name)) @_end_name
-;  (#eq? @_start_name @_end_name)
-;)
+; only fold function block body
+(function_declaration
+  body: (block) @fold
+  (#lua-match? @fold "^.*\n.*\n")
+  (#offset! @fold 1 0 -1 0)
+  )
+
+(func_literal
+  body: (block) @fold
+  (#lua-match? @fold "^.*\n.*\n")
+  (#offset! @fold 1 0 -1 0)
+  )
+
+; only fold if statements with gt 3 newlines
+(
+ (if_statement) @fold
+ (#lua-match? @fold "^.*\n.*\n.*\n")
+ )
+
 
 
 
@@ -91,24 +103,6 @@
 
 
 
-; only fold function block body
-(function_declaration
-  body: (block) @fold
-  (#lua-match? @fold "^.*\n.*\n")
-  (#offset! @fold 1 0 -1 0)
-  )
-
-(func_literal
-  body: (block) @fold
-  (#lua-match? @fold "^.*\n.*\n")
-  (#offset! @fold 1 0 -1 0)
-  )
-
-; only fold if statements with gt 3 newlines
-(
- (if_statement) @fold
- (#lua-match? @fold "^.*\n.*\n.*\n")
- )
 
 
 
