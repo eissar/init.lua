@@ -20,7 +20,7 @@
  (literal_element)
  ; remove comments, block default behavior
  (comment)
- (block)
+ ;(block)
  ] @fold
 
 (; fold c# regions
@@ -29,13 +29,12 @@
   (#match_region? @start_name @end_name)
 ) @fold
 
-; only fold function block body
+; only fold function block body w/ a couple newlines.
 (function_declaration
   body: (block) @fold
   (#lua-match? @fold "^.*\n.*\n")
   (#offset! @fold 1 0 -1 0)
   )
-
 (func_literal
   body: (block) @fold
   (#lua-match? @fold "^.*\n.*\n")

@@ -255,13 +255,32 @@ return {
                 gopls = {
                     settings = {
                         gofumpt = true,
-                        --hints = { assignVariableTypes = true },
+                        analyses = {
+                            nilness = true,
+                            unusedparams = true,
+                            unusedwrite = true,
+                            useany = true,
+                        },
+                        hints = {
+                            assignVariableTypes = true,
+                            compositeLiteralFields = true,
+                            compositeLiteralTypes = true,
+                            constantValues = true,
+                            functionTypeParameters = true,
+                            parameterNames = true,
+                            rangeVariableTypes = true,
+                        },
+                        analyses = {
+                            nilness = true,
+                            unusedparams = true,
+                            unusedwrite = true,
+                            useany = true,
+                        },
                         experimentalPostfixCompletions = true,
                         staticcheck = true,
                         linksInHover = 'gopls',
-                        verboseOutput = true,
                         usePlaceholders = true,
-                        completionBudget = '0ms', --unlimited
+                        directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                     },
                 },
                 pyright = {
