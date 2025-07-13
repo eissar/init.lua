@@ -153,11 +153,12 @@ require('lazy').setup({
             require('telescope').setup {
                 -- You can put your default mappings / updates / etc. in here
                 --  `:help telescope.setup()`
-                --
                 -- defaults = {
-                --   mappings = {
-                --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-                --   },
+                --
+                mappings = {
+                    i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+                },
+
                 -- },
                 -- pickers = {}
                 extensions = {
