@@ -14,7 +14,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('BufWinEnter', {
     pattern = 'term://*',
     command = 'set filetype=term',
-    group = vim.api.nvim_create_augroup('TermBuffers', { clear = true }),
+    group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
+})
+-- set filetype for sql files
+vim.api.nvim_create_autocmd('BufWinEnter', {
+    pattern = '*.tsql',
+    command = 'set filetype=sql',
+    group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
 })
 
 -- removes trailing whitespace on save

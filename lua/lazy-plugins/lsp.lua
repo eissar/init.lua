@@ -288,12 +288,12 @@ return {
                 },
                 -- sqls = {
                 --     single_file_support = true,
-                --     -- do not configure here. edit config at: ['~\.config\sqls\config.yml']
-                --     -- connections = {
-                --     --     alias = "sakila_master",
-                --     --     driver = "sqlite3",
-                --     --     dataSourceName = "file:/Users/eshaa/sakila_master.db",
-                --     --   }
+                --     filetypes = { 'sql', 'mssql' },
+                --     on_attach = function(client)
+                --         client.server_capabilities.documentFormattingProvider = false
+                --         client.server_capabilities.documentRangeFormattingProvider = false
+                --     end,
+                --     --     -- do not configure here. edit config at: ['~\.config\sqls\config.yml'] connections = { alias = "sakila_master", driver = "sqlite3", dataSourceName = "file:/Users/eshaa/sakila_master.db", }
                 -- },
                 -- tsserver = {},
                 eslint = {
@@ -402,10 +402,14 @@ return {
             -- for you, so that they are available from within Neovim.
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
-                'stylua', -- Used to format Lua code
+                'stylua', -- formatter for lua
+                'sleek', --formatter for sql
+                'sqlfluff', --linter for sql
+                'prettierd', -- js formatter
             })
             require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+            ---@diagnostic disable-next-line: missing-fields
             require('mason-lspconfig').setup {
                 handlers = {
                     function(server_name)
@@ -450,10 +454,22 @@ return {
             end,
             formatters_by_ft = {
                 lua = { 'stylua' },
-                templ = nil,
+                -- sql = { 'sleek' }, -- works
+                sql = { 'sqlfluff' },
                 -- Conform can also run multiple formatters sequentially
                 -- You can use 'stop_after_first' to run the first available formatter from the list
                 javascript = { 'prettierd', 'prettier', stop_after_first = true },
+            },
+            -- <https://github.com/m0lson84/neovim/blob/2f01d16fe9ac2a736428dec56bf23edd3f10d3c5/lua/plugins/linters/sqlfluff.lua#L24>
+            formatters = {
+                sqlfluff = {
+                    -- sqlfluff = { args = { 'fix', '--dialect', 'ansi', '-' } },
+                    -- args = { 'fix', '--show-lint-violations', '-p', '6', '--ignore', 'parsing', '-' },
+                    -- args = { 'fix', '--ignore', 'parsing', '-' },
+                    args = { 'fix', '-' },
+                    exit_codes = { 0, 1 }, -- TODO: add to conform settings
+                    stdin = true,
+                },
             },
         },
     },
