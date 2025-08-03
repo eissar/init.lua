@@ -188,7 +188,7 @@ require('lazy').setup({
         'nvim-treesitter/nvim-treesitter',
         opts = {
             compilers = { 'zig', 'gcc', 'clang' },
-            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'sql' },
+            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
             -- Autoinstall languages that are not installed
             -- Install parsers synchronously (only applied to `ensure_installed`)
             sync_install = false,
@@ -211,6 +211,21 @@ require('lazy').setup({
             require('nvim-treesitter.configs').setup(opts)
 
             require('nvim-treesitter.install').prefer_git = false
+
+            local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+            parser_config.sql = {
+                install_info = {
+                    url = 'https://github.com/DerekStride/tree-sitter-sql', -- local path or git repo
+                    files = { 'src/parser.c', 'src/scanner.c' }, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                    -- optional entries:
+                    branch = 'gh-pages', -- default branch in case of git repo if different from master
+
+                    -- generate_requires_npm = false,
+                    -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
+                },
+                vim.treesitter.language.register('sql', 'sql'),
+                filetype = 'sql', -- if filetype does not match the parser name
+            }
 
             -- {lang}        (`string`) Language to use for the query
             -- {query_name}  (`string`) Name of the query (e.g., "highlights")

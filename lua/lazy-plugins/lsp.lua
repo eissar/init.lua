@@ -403,7 +403,7 @@ return {
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
                 'stylua', -- formatter for lua
-                'sleek', --formatter for sql
+                -- 'sleek', --formatter for sql
                 'sqlfluff', --linter for sql
                 'prettierd', -- js formatter
             })

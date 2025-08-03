@@ -19,7 +19,7 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
 -- set filetype for sql files
 vim.api.nvim_create_autocmd('BufWinEnter', {
     pattern = '*.tsql',
-    command = 'set filetype=sql',
+    command = '',
     group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
 })
 
