@@ -8,6 +8,15 @@ vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 --vim.opt_local.foldtext = 'v:lua.parse_line'
 vim.opt_local.foldtext = ''
 
+-- vim.treesitter.query.add_predicate('match-region', match_region_predicate, nil)
+-- -- prints <userdata>
+-- (
+--  [
+--   (comment) @_a
+--   (#lua-match? @_a "^// #region.*")
+--   ] @_start
+--   (#match-region? @_a @_start)
+-- )
 -- Predicate handler receive the following arguments
 -- (match, pattern, bufnr, predicate)
 -- TODO: make nice

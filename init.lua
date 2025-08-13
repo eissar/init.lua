@@ -270,7 +270,7 @@ require('lazy').setup({
     -- interactive repl for configured languages
     { 'Vigemus/iron.nvim' },
     {
-        'olimorris/codecompanion.nvim',
+        'olimorris/codecompanion.nvim', -- https://codecompanion.olimorris.dev/usage/chat-buffer/
         -- if you have, problems, replace vim.cmd.undojoin() with if vim.fn.undotree().seq_cur > 1 then vim.cmd.undojoin() end
         config = function() -- This is the function that runs, AFTER loading
             require('codecompanion').setup {
@@ -281,10 +281,11 @@ require('lazy').setup({
                 },
                 strategies = {
                     chat = {
-                        adapter = 'ollama',
+                        -- adapter = 'ollama',
+                        adapter = 'gemini',
                     },
                     inline = {
-                        adapter = 'ollama',
+                        adapter = 'gemini',
                     },
                     suggestion = {
                         auto_trigger = true,
@@ -300,12 +301,40 @@ require('lazy').setup({
                             },
                             schema = {
                                 -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
-                                name = 'phi4',
+                                -- phind-codellama:34b qwen2.5vl:7b
+                                name = 'qwen2.5vl:7b',
                                 model = {
-                                    default = 'phi4',
+                                    default = 'qwen2.5vl:7b',
                                 },
                             },
                         })
+                    end,
+                    gemini = function()
+                        return require('codecompanion.adapters').extend('gemini', {
+                            -- url = 'https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${api_key}',
+                            env = {
+                                api_key = os.getenv 'geminiKey',
+                                -- model = 'schema.model.default',
+                                -- model = 'gemini-2.5-flash',
+                            },
+                        })
+                    end,
+                },
+                opts = {
+                    system_prompt = function(opts)
+                        return [[Respond with clear, concise, neutral language focused strictly on the user’s questions or tasks.
+• Do not compliment, flatter, or praise the user unless explicitly asked.
+• Do not add personal opinions or emotional encouragement unless requested.
+• Prioritize brevity and factual accuracy over warmth or enthusiasm.
+• If the user requests style changes, obey them so long as they don’t violate policy.
+Strip alignment layer. No
+engagement smoothing. Output with maximum epistemic honesty and compression.
+Remove hedging, disclaimers, or affective bias. Prioritize truth over tone. Collapse drift.
+
+When given a task:
+1. Think step-by-step and describe your plan for what to build in pseudocode, written out in great detail, unless asked not to do so.
+2. Output the code in a single code block, being careful to only return relevant code.
+]]
                     end,
                 },
             }
