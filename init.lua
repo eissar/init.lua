@@ -49,6 +49,9 @@ vim.opt.rtp:prepend(lazypath)
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
     {
+        'L3MON4D3/LuaSnip',
+    },
+    {
         'tpope/vim-fugitive',
     },
     {
@@ -153,11 +156,12 @@ require('lazy').setup({
             require('telescope').setup {
                 -- You can put your default mappings / updates / etc. in here
                 --  `:help telescope.setup()`
-                --
                 -- defaults = {
-                --   mappings = {
-                --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-                --   },
+                --
+                mappings = {
+                    i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+                },
+
                 -- },
                 -- pickers = {}
                 extensions = {
@@ -207,6 +211,21 @@ require('lazy').setup({
             require('nvim-treesitter.configs').setup(opts)
 
             require('nvim-treesitter.install').prefer_git = false
+
+            local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+            parser_config.sql = {
+                install_info = {
+                    url = 'https://github.com/DerekStride/tree-sitter-sql', -- local path or git repo
+                    files = { 'src/parser.c', 'src/scanner.c' }, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                    -- optional entries:
+                    branch = 'gh-pages', -- default branch in case of git repo if different from master
+
+                    -- generate_requires_npm = false,
+                    -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
+                },
+                vim.treesitter.language.register('sql', 'sql'),
+                filetype = 'sql', -- if filetype does not match the parser name
+            }
 
             -- {lang}        (`string`) Language to use for the query
             -- {query_name}  (`string`) Name of the query (e.g., "highlights")

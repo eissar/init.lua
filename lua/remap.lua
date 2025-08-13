@@ -1,6 +1,7 @@
 -- [[ Basic Keymaps ]] See `:help vim.keymap.set()`
 
 -- There is a popular mapping that will show the :ls result above a prompt: <https://vi.stackexchange.com/questions/14829/close-multiple-buffers-interactively>
+-- TODO: this seems to be broken.
 vim.keymap.set('n', '<leader>ls', ':ls<CR>:b<space>')
 vim.api.nvim_set_keymap('n', '<C-v>', '"+p', { noremap = true })
 
@@ -102,6 +103,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Telescope bindings; see `:help telescope.builtin`
 do
     local builtin = require 'telescope.builtin'
+    local actions = require 'telescope.actions'
+    local action_state = require 'telescope.actions.state'
+
     vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
     vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
     vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
@@ -113,8 +117,30 @@ do
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
     vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
+
+    local lsfn = function()
+        builtin.buffers {
+            sort_mru = true,
+
+            attach_mappings = function(_, map)
+                map({ 'i', 'n' }, '<C-d>', function(bufnr) -- _prompt_bufnr,
+                    -- TODO: try to close picker automatically on zero results
+                    -- results;
+                    -- local selections = current_picker
+                    -- local current_picker = action_state.get_current_picker(bufnr)
+
+                    actions.delete_buffer(bufnr)
+                end)
+
+                return true -- return true to apply map to default_mappings
+            end,
+        }
+    end
+
+    -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>ls', lsfn, { desc = '[L]i[S]t buffers ' })
+    vim.keymap.set('n', '<leader><leader>', lsfn, { desc = '[ ] Find existing buffers' })
 
     -- vim.keymap.set('n', '<C-p>', builtin.git_files, {})
     -- Slightly advanced example of overriding default behavior and theme
