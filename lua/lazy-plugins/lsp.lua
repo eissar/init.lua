@@ -309,7 +309,7 @@ return {
                     root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
                     settings = {},
                     init_options = {
-                        lint = true,
+                        -- lint = true,
                         unstable = true,
                     },
                 },

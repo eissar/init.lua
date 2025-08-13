@@ -22,6 +22,35 @@
  ;(block)
  ] @fold
 
+;(
+;  (comment) @fold
+;  (#lua-match? @fold "^//#region.*")
+;  (#offset! @fold 0 0 3 0)
+;)
+
+(
+ [
+  (comment) @_a
+  (#lua-match? @_a "^// #region.*")
+  ] @_start
+ ;(_)+ @fold
+ [
+  (comment) @_b
+  (#lua-match? @_b "^// #endregion.*")
+  ] @_end
+  (#contains? @_b "region types")
+  ; cant do this:
+  ; (#contains? @_b @_a) ; #contains? "// #endregion types" "// #region types"
+) 
+
+;(
+; [(comment) @fold (#lua-match? @fold "^// #region.*")]
+; (_)* @fold
+; [(comment) @fold (#lua-match? @fold "^// #endregion.*")]
+;)
+
+
+
 ; only fold function block body (not nesting)
 (function_declaration
   body: (block) @fold
