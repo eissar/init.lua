@@ -286,6 +286,16 @@ return {
                 pyright = {
                     single_file_support = true,
                 },
+                jsonls = {
+                    settings = {
+                        schemas = {
+                            {
+                                fileMatch = { 'deno.json', 'deno.jsonc' },
+                                url = 'https://github.com/denoland/deno/blob/main/cli/schemas/config-file.v1.json',
+                            },
+                        },
+                    },
+                },
                 -- sqls = {
                 --     single_file_support = true,
                 --     filetypes = { 'sql', 'mssql' },

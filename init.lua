@@ -66,14 +66,14 @@ require('lazy').setup({
 
     -- Neovim plugin to animate the cursor with a smear (subtle)
     {
-        'sphamba/smear-cursor.nvim',
-        opts = {
-            cursor_color = '#CDCECF',
-            stiffness = 0.8,
-            trailing_stiffness = 0.62,
-            distance_stop_animating = 0.5,
-            hide_target_hack = false,
-        },
+        -- 'sphamba/smear-cursor.nvim',
+        -- opts = {
+        --     cursor_color = '#CDCECF',
+        --     stiffness = 0.8,
+        --     trailing_stiffness = 0.62,
+        --     distance_stop_animating = 0.5,
+        --     hide_target_hack = false,
+        -- },
     },
     -- Detect tabstop and shiftwidth automatically,
     -- { 'tpope/vim-sleuth', },
@@ -186,6 +186,7 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = 'master',
         opts = {
             compilers = { 'zig', 'gcc', 'clang' },
             ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
@@ -258,6 +259,7 @@ require('lazy').setup({
         -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
         'EdenEast/nightfox.nvim',
         priority = 1000, -- Make sure to load this before all the other start plugins.
+        lazy = true,
         init = function()
             -- Load the colorscheme here.
             vim.cmd.colorscheme 'nightfox'
