@@ -257,12 +257,49 @@ require('lazy').setup({
         --
         -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
         'EdenEast/nightfox.nvim',
-        priority = 1000, -- Make sure to load this before all the other start plugins.
-        init = function()
-            -- Load the colorscheme here.
+        priority = 1000, -- Make sure to load this before other plugins
+        config = function()
+            palette = require('nightfox.palette.nightfox').palette
+            -- This is where you configure the colorscheme before loading it
+            require('nightfox').setup {
+                options = {
+                    -- Your global nightfox options here
+                },
+                groups = {
+                    -- Override highlight groups for specific themes here
+                    nightfox = {
+                        -- Example: Change the color of strings to orange
+                        ['@string'] = { fg = 'palette.green' },
+                        -- Maps to your 'Command' color, typically functions or methods
+                        -- ['@function.powershell'] = { fg = 'palette.blue', style = 'bold' },
+                        -- ['@method.powershell'] = { fg = 'palette.blue', style = 'bold' },
+                        ['@command.powershell'] = { fg = 'palette.orange', style = 'bold' },
+
+                        -- Maps to your 'Operator' and 'Keyword' colors
+                        ['@operator.powershell'] = { fg = 'palette.magenta' },
+                        ['@keyword.powershell'] = { fg = 'palette.magenta' },
+
+                        -- Maps to your 'Variable' color
+                        -- ['@variable.powershell'] = { style = 'italic' },
+                        ['@variable.builtin.powershell'] = { fg = 'palette.red' },
+                        -- ['@boolean.powershell'] = { fg = 'palette.red', style = 'bold' },
+                        ['@variable.parameter.powershell'] = { fg = 'palette.green' }, -- should this be?
+
+                        -- ['@parameter.powershell'] = { fg = palette.blue.light },
+
+                        -- Maps to your 'String' color
+                        ['@string.powershell'] = { fg = 'palette.green' },
+
+                        -- Maps to your 'Number' and 'Error' colors
+                        ['@number.powershell'] = { fg = 'palette.red' },
+                        ['@error.powershell'] = { fg = 'palette.red' },
+                    },
+                },
+            }
+
+            -- After setup, apply the colorscheme.
+            -- This ensures your custom groups are loaded correctly.
             vim.cmd.colorscheme 'nightfox'
-            -- You can configure highlights by doing something like:
-            vim.cmd.hi 'Comment gui=none'
         end,
     },
     -- interactive repl for configured languages
