@@ -186,6 +186,7 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = 'master',
         opts = {
             compilers = { 'zig', 'gcc', 'clang' },
             ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'jsdoc' },
@@ -257,9 +258,11 @@ require('lazy').setup({
         --
         -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
         'EdenEast/nightfox.nvim',
-        priority = 1000, -- Make sure to load this before other plugins
-        config = function()
-            palette = require('nightfox.palette.nightfox').palette
+        priority = 1000, -- Make sure to load this before all the other start plugins.
+        lazy = true,
+        init = function()
+            -- Load the colorscheme here.
+            -- local palette = require('nightfox.palette.nightfox').palette
             -- This is where you configure the colorscheme before loading it
             require('nightfox').setup {
                 options = {
