@@ -209,6 +209,7 @@ return {
                     capabilities = capabilities,
                     bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
                     shell = 'pwsh.exe',
+                    root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
                     single_file_support = true,
                     settings = {
                         -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
@@ -217,7 +218,7 @@ return {
                                 -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
                                 enable = true,
                                 -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
-                                settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+                                -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
                             },
                             codeFormatting = {
                                 --enable = false
@@ -226,6 +227,7 @@ return {
                                 useCorrectCasing = true,
                                 openBraceOnSameLine = true,
                             },
+                            settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
                             -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
                             -- },
 

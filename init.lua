@@ -188,7 +188,7 @@ require('lazy').setup({
         'nvim-treesitter/nvim-treesitter',
         opts = {
             compilers = { 'zig', 'gcc', 'clang' },
-            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'jsdoc' },
             -- Autoinstall languages that are not installed
             -- Install parsers synchronously (only applied to `ensure_installed`)
             sync_install = false,

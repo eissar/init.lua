@@ -197,6 +197,24 @@ vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'Code
 -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
 vim.cmd [[cab cc CodeCompanion]]
 
+vim.keymap.set('n', '<leader>dh', function()
+    local params = vim.lsp.util.make_position_params()
+
+    vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(results)
+        for _, res in pairs(results) do
+            if res.result and res.result.contents then
+                local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(res.result.contents)
+                markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
+                if not vim.tbl_isempty(markdown_lines) then
+                    vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', { border = 'single' })
+                    return
+                end
+            end
+        end
+        vim.notify('No hover info available', vim.log.levels.INFO)
+    end)
+end, { desc = 'Show hover docs (all clients)' })
+
 -- # KEYMAPS SET IN OTHER FILES:
 -- <leader>
 --
