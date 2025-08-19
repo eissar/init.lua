@@ -250,7 +250,7 @@ do --#region JS/TS
             txt { '', '' }, --newline
             txt '})();',
         }
-        table.insert(html_snips, new_snippet_with_alias('iife', snip))
+        table.insert(js_snips, new_snippet_with_alias('iife', snip))
     end
 
     -- table.insert(html_snips, snippet('cmt', { txt '<!---->' }))
@@ -269,12 +269,12 @@ end --#endregion
 --
 
 --[[
-    local function new_snip_with_aliases(cfg, snip)
-        for alias, config in pairs(cfg) do
-            vim.notify(alias)
-            -- You can add more logic here if needed
-        end
-    end
-    local this_cfg = { ['test'] = {}, ['test1'] = 1 }
-    new_snip_with_aliases(this_cfg)
-[[]]
+--     local function new_snip_with_aliases(cfg, snip)
+--         for alias, config in pairs(cfg) do
+--             vim.notify(alias)
+--             -- You can add more logic here if needed
+--         end
+--     end
+--     local this_cfg = { ['test'] = {}, ['test1'] = 1 }
+--     new_snip_with_aliases(this_cfg)
+-- [[]]
