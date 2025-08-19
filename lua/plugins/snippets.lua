@@ -240,6 +240,24 @@ do --#region HTML
     luasnip.add_snippets('html', html_snips)
 end --#endregion
 
+do --#region JS/TS
+    local js_snips = {}
+    do -- alias iife; immediately invoked function expression
+        local snip = {
+            txt '(() => {',
+            txt { '', '\t' }, --newline and tab
+            insert(1, ''),
+            txt { '', '' }, --newline
+            txt '})();',
+        }
+        table.insert(html_snips, new_snippet_with_alias('iife', snip))
+    end
+
+    -- table.insert(html_snips, snippet('cmt', { txt '<!---->' }))
+    luasnip.add_snippets('javascript', js_snips)
+    luasnip.add_snippets('typescript', js_snips)
+end --#endregion
+
 --[[
     --#region ALL
     local term_snips = {}
