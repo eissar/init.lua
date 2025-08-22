@@ -38,7 +38,7 @@ vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = '[F]ilename completion' })
 --'<leader><Ctrl>v',":lua insertFilename()<cr>",
 --{ noremap = true, silent = true })
 
---[[ Lua function keybindings ]]
+--[[ misc user function keybindings ]]
 vim.api.nvim_set_keymap('n', 'gX', ':lua getNodeAsUrl()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>', { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
 vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = true, silent = true })
@@ -101,8 +101,7 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 --vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 --vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Telescope bindings; see `:help telescope.builtin`
-do
+do -- Telescope bindings; see `:help telescope.builtin`
     local builtin = require 'telescope.builtin'
     local actions = require 'telescope.actions'
     local action_state = require 'telescope.actions.state'
@@ -119,6 +118,8 @@ do
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
     vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
+
+    vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
 
     local lsfn = function()
         builtin.buffers {
@@ -189,75 +190,15 @@ do
     vim.keymap.set('n', '<leader>sc', colors)
 end
 
--- CodeCompanionChat <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
-vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
--- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
--- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
--- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
--- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
--- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
-vim.cmd [[cab cc CodeCompanion]]
-
-vim.keymap.set('n', '<leader>dh', function()
-    local params = vim.lsp.util.make_position_params(0, 'utf-8')
-    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = 'rounded',
-    })
-
-    vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(results)
-        for _, res in pairs(results) do
-            if res.result and res.result.contents then
-                local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(res.result.contents)
-                markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
-                if not vim.tbl_isempty(markdown_lines) then
-                    vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', { border = 'single' })
-                    return
-                end
-            end
-        end
-        vim.notify('No hover info available', vim.log.levels.INFO)
-    end)
-end, { desc = 'Show hover docs (all clients)' })
-
-vim.keymap.set('n', '<leader>wc', function()
-    -- Define the configuration sections you want to query.
-    -- You must know the specific keys for your language servers.
-    local params = {
-        items = {
-            { section = 'powershell.workspace' }, -- Example for lua-language-server
-            { section = 'powershell.settings' }, -- Example for lua-language-server
-            -- { section = "pyright.analysis" }, -- Example for pyright
-            -- Add any other sections you want to inspect
-        },
-    }
-
-    -- Request the configuration from all attached LSP servers.
-    vim.lsp.buf_request_all(0, 'workspace/configuration', params, function(results)
-        local all_configs = {}
-        local found_config = false
-
-        for client_id, res in pairs(results) do
-            -- The result is an array of the requested configuration values.
-            if res.result and not vim.tbl_isempty(res.result) then
-                found_config = true
-                local client = vim.lsp.get_client_by_id(client_id)
-                local client_name = client and client.name or tostring(client_id)
-                all_configs[client_name] = res.result
-            end
-        end
-
-        if not found_config then
-            vim.notify('No server returned a configuration.', vim.log.levels.WARN)
-            return
-        end
-
-        -- Use vim.inspect() to convert the Lua table to a readable string.
-        local output_lines = vim.split(vim.inspect(all_configs), '\n')
-
-        -- Display the raw configuration result in a floating preview window.
-        vim.lsp.util.open_floating_preview(output_lines, 'lua', { border = 'single' })
-    end)
-end, { desc = '[W]orkspace [C]onfiguration' })
+do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
+    vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
+    -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+    -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+    -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+    -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
+    -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
+    vim.cmd [[cab cc CodeCompanion]]
+end
 
 --- @type vim.api.keyset.create_autocmd
 M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
@@ -265,8 +206,10 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
     callback = function(event)
         local client = vim.lsp.get_client_by_id(event.data.client_id)
 
+        ---@param desc string
         local map = function(keys, func, desc)
-            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+            print('DEBUG: Type of desc: ' .. vim.inspect(type(desc)) .. vim.inspect(desc))
+            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc }) -- desc = 'LSP: ' .. desc })
         end
 
         -- Jump to the definition of the word under your cursor.
@@ -408,23 +351,23 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
             if #clients == 0 then
                 table.insert(output_lines, 'No active LSP clients found.')
             else
-                table.insert(output_lines, 'Server capabilities for active LSP clients:')
-                for _, client in ipairs(clients) do
-                    table.insert(output_lines, '') -- Add a blank line for spacing between clients.
-                    table.insert(output_lines, string.format('--- Client: %s ---', client.name))
+                table.insert(output_lines, 'Server capabilities for active LSP _clients:')
+                for _, _client in ipairs(clients) do
+                    table.insert(output_lines, '') -- Add a blank line for spacing between _clients.
+                    table.insert(output_lines, string.format('--- _client: %s ---', _client.name))
 
-                    -- Check if the client reported any server capabilities.
-                    if client.server_capabilities and next(client.server_capabilities) then
-                        format_capabilities(client.server_capabilities, 1)
+                    -- Check if the _client reported any server capabilities.
+                    if _client.server_capabilities and next(_client.server_capabilities) then
+                        format_capabilities(_client.server_capabilities, 1)
                     else
-                        table.insert(output_lines, '  No server capabilities found for this client.')
+                        table.insert(output_lines, '  No server capabilities found for this _client.')
                     end
                 end
             end
 
             -- Display the final formatted output in the scratch buffer.
             show_in_scratch_buffer(output_lines)
-        end, { desc = '[d]ebug [l]sp' })
+        end, '[d]ebug [l]sp')
 
         -- The following code creates a keymap to toggle inlay hints in your
         -- code, if the language server you are using supports them
@@ -437,6 +380,67 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
                 vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
         end
+
+        vim.keymap.set('n', '<leader>dh', function()
+            local params = vim.lsp.util.make_position_params(0, 'utf-8')
+            vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+                border = 'rounded',
+            })
+
+            vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(results)
+                for _, res in pairs(results) do
+                    if res.result and res.result.contents then
+                        local markdown_lines = vim.lsp.util.convert_input_to_markdown_lines(res.result.contents)
+                        markdown_lines = vim.lsp.util.trim_empty_lines(markdown_lines)
+                        if not vim.tbl_isempty(markdown_lines) then
+                            vim.lsp.util.open_floating_preview(markdown_lines, 'markdown', { border = 'single' })
+                            return
+                        end
+                    end
+                end
+                vim.notify('No hover info available', vim.log.levels.INFO)
+            end)
+        end, { desc = 'Show hover docs (all clients)' })
+
+        vim.keymap.set('n', '<leader>wc', function()
+            -- Define the configuration sections you want to query.
+            -- You must know the specific keys for your language servers.
+            local params = {
+                items = {
+                    { section = 'powershell.workspace' }, -- Example for lua-language-server
+                    { section = 'powershell.settings' }, -- Example for lua-language-server
+                    -- { section = "pyright.analysis" }, -- Example for pyright
+                    -- Add any other sections you want to inspect
+                },
+            }
+
+            -- Request the configuration from all attached LSP servers.
+            vim.lsp.buf_request_all(0, 'workspace/configuration', params, function(results)
+                local all_configs = {}
+                local found_config = false
+
+                for client_id, res in pairs(results) do
+                    -- The result is an array of the requested configuration values.
+                    if res.result and not vim.tbl_isempty(res.result) then
+                        found_config = true
+                        local client = vim.lsp.get_client_by_id(client_id)
+                        local client_name = client and client.name or tostring(client_id)
+                        all_configs[client_name] = res.result
+                    end
+                end
+
+                if not found_config then
+                    vim.notify('No server returned a configuration.', vim.log.levels.WARN)
+                    return
+                end
+
+                -- Use vim.inspect() to convert the Lua table to a readable string.
+                local output_lines = vim.split(vim.inspect(all_configs), '\n')
+
+                -- Display the raw configuration result in a floating preview window.
+                vim.lsp.util.open_floating_preview(output_lines, 'lua', { border = 'single' })
+            end)
+        end, { desc = '[W]orkspace [C]onfiguration' })
     end,
 }
 -- # KEYMAPS SET IN OTHER FILES:
