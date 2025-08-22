@@ -1,5 +1,5 @@
 -- [[ Basic Keymaps ]] See `:help vim.keymap.set()`
-
+local M = {}
 -- There is a popular mapping that will show the :ls result above a prompt: <https://vi.stackexchange.com/questions/14829/close-multiple-buffers-interactively>
 -- TODO: this seems to be broken.
 vim.keymap.set('n', '<leader>ls', ':ls<CR>:b<space>')
@@ -54,6 +54,7 @@ vim.keymap.set('n', '<leader>gq', ':copen<cr>', { desc = '[G]oto [Q]uickfix' })
 vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { desc = '[G]oto [D]efinition' })
 vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { desc = '[G]oto [D]eclaration' })
 vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { desc = '[G]oto [I]mplementation' })
+vim.keymap.set('n', '<leader>td', vim.lsp.buf.type_definition, { desc = '[G]oto [I]mplementation' })
 
 --vim.keymap.set('n', '<leader>ow', vim.cmd 'only', { desc = '[O]nly [I]mplementation' })
 vim.keymap.set('n', '<leader>zo', function()
@@ -198,7 +199,10 @@ vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'Code
 vim.cmd [[cab cc CodeCompanion]]
 
 vim.keymap.set('n', '<leader>dh', function()
-    local params = vim.lsp.util.make_position_params()
+    local params = vim.lsp.util.make_position_params(0, 'utf-8')
+    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+        border = 'rounded',
+    })
 
     vim.lsp.buf_request_all(0, 'textDocument/hover', params, function(results)
         for _, res in pairs(results) do
@@ -215,7 +219,229 @@ vim.keymap.set('n', '<leader>dh', function()
     end)
 end, { desc = 'Show hover docs (all clients)' })
 
+vim.keymap.set('n', '<leader>wc', function()
+    -- Define the configuration sections you want to query.
+    -- You must know the specific keys for your language servers.
+    local params = {
+        items = {
+            { section = 'powershell.workspace' }, -- Example for lua-language-server
+            { section = 'powershell.settings' }, -- Example for lua-language-server
+            -- { section = "pyright.analysis" }, -- Example for pyright
+            -- Add any other sections you want to inspect
+        },
+    }
+
+    -- Request the configuration from all attached LSP servers.
+    vim.lsp.buf_request_all(0, 'workspace/configuration', params, function(results)
+        local all_configs = {}
+        local found_config = false
+
+        for client_id, res in pairs(results) do
+            -- The result is an array of the requested configuration values.
+            if res.result and not vim.tbl_isempty(res.result) then
+                found_config = true
+                local client = vim.lsp.get_client_by_id(client_id)
+                local client_name = client and client.name or tostring(client_id)
+                all_configs[client_name] = res.result
+            end
+        end
+
+        if not found_config then
+            vim.notify('No server returned a configuration.', vim.log.levels.WARN)
+            return
+        end
+
+        -- Use vim.inspect() to convert the Lua table to a readable string.
+        local output_lines = vim.split(vim.inspect(all_configs), '\n')
+
+        -- Display the raw configuration result in a floating preview window.
+        vim.lsp.util.open_floating_preview(output_lines, 'lua', { border = 'single' })
+    end)
+end, { desc = '[W]orkspace [C]onfiguration' })
+
+--- @type vim.api.keyset.create_autocmd
+M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
+    group = vim.api.nvim_create_augroup('kickstart-lsp-attach-keymap', { clear = true }),
+    callback = function(event)
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+        local map = function(keys, func, desc)
+            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+        end
+
+        -- Jump to the definition of the word under your cursor.
+        --  This is where a variable was first declared, or where a function is defined, etc.
+        --  To jump back, press <C-t>.
+        map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+
+        -- Find references for the word under your cursor.
+        map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+
+        -- Jump to the implementation of the word under your cursor.
+        --  Useful when your language has ways of declaring types without an actual implementation.
+        map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
+        -- Jump to the type of the word under your cursor.
+        --  Useful when you're not sure what type a variable is and you want to see
+        --  the definition of its *type*, not where it was *defined*.
+        map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+
+        -- Fuzzy find all the symbols in your current document.
+        --  Symbols are things like variables, functions, types, etc.
+        map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+
+        -- Fuzzy find all the symbols in your current workspace.
+        --  Similar to document symbols, except searches over your entire project.
+        map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+
+        -- Rename the variable under your cursor.
+        --  Most Language Servers support renaming across files, etc.
+        map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+        -- Execute a code action, usually your cursor needs to be on top of an error
+        -- or a suggestion from your LSP for this to activate.
+        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+
+        -- WARN: This is not Goto Definition, this is Goto Declaration.
+        --  For example, in C this would take you to the header.
+        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+        map('<leader>dl', function()
+            --[[ This script inspects all active Neovim LSP clients and prints their full server capabilities into a new, read-only scratch buffer. ]]
+            -- Get all currently active LSP clients attached to the buffer.
+            local clients = vim.lsp.get_active_clients()
+            local output_lines = {}
+            --- Checks if a table is a sequence (array-like).
+            -- A table is considered a sequence if its keys are a continuous
+            -- set of integers starting from 1.
+            -- @param tbl The table to check.
+            -- @return boolean True if the table is a sequence.
+            local function is_sequence(tbl)
+                if type(tbl) ~= 'table' then
+                    return false
+                end
+                local i = 0
+                for _ in pairs(tbl) do
+                    i = i + 1
+                    if tbl[i] == nil then
+                        return false
+                    end
+                end
+                return true
+            end
+
+            --- Recursively formats a table of capabilities and adds them to the output.
+            -- @param caps_table The table of capabilities to format.
+            -- @param indent_level The current indentation level for pretty-printing.
+            local function format_capabilities(caps_table, indent_level)
+                -- Default to the base indentation level if not provided.
+                indent_level = indent_level or 0
+                local indent = string.rep('  ', indent_level)
+
+                -- Sort keys for consistent and readable output.
+                local sorted_keys = {}
+                for key, _ in pairs(caps_table) do
+                    table.insert(sorted_keys, key)
+                end
+                table.sort(sorted_keys)
+
+                -- Iterate over the sorted keys to process each capability.
+                for _, key in ipairs(sorted_keys) do
+                    local value = caps_table[key]
+
+                    if type(value) == 'table' then
+                        if is_sequence(value) then
+                            -- It's an array-like table. Format it on a single line.
+                            local items = {}
+                            for _, item in ipairs(value) do
+                                if type(item) == 'table' then
+                                    table.insert(items, '{...}') -- Avoid deep nesting in single-line format
+                                elseif type(item) == 'string' then
+                                    table.insert(items, string.format('"%s"', item)) -- Add quotes for clarity
+                                else
+                                    table.insert(items, tostring(item))
+                                end
+                            end
+                            if #items == 0 then
+                                table.insert(output_lines, string.format('%s%s = {}', indent, key))
+                            else
+                                table.insert(output_lines, string.format('%s%s = { %s }', indent, key, table.concat(items, ', ')))
+                            end
+                        else
+                            -- It's an object/map-like table. Recurse into it.
+                            table.insert(output_lines, string.format('%s%s:', indent, key))
+                            format_capabilities(value, indent_level + 1)
+                        end
+                    else
+                        -- If it's a primitive value (boolean, string, number), print it directly.
+                        table.insert(output_lines, string.format('%s%s = %s', indent, key, tostring(value)))
+                    end
+                end
+            end
+
+            --- Displays the output lines in a new, non-editable scratch buffer.
+            -- @param lines A table of strings to display.
+            local function show_in_scratch_buffer(lines)
+                -- Create a new scratch buffer (not listed, scratch type).
+                local buf = vim.api.nvim_create_buf(false, true)
+
+                -- Open the buffer in a new vertical split window.
+                vim.api.nvim_open_win(buf, true, {
+                    split = 'right',
+                    width = 80, -- Set a reasonable default width
+                })
+
+                -- Set buffer options for a clean, read-only experience.
+                vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe') -- Close buffer when window is closed
+                vim.api.nvim_buf_set_option(buf, 'buftype', 'nofile') -- Not a file-backed buffer
+                vim.api.nvim_buf_set_option(buf, 'swapfile', false) -- No swap file
+                vim.api.nvim_buf_set_option(buf, 'filetype', 'lua') -- Set filetype for syntax highlighting
+
+                -- Write the collected lines to the new buffer.
+                vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+
+                -- Make the buffer read-only *after* inserting the content.
+                vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+            end
+
+            -- Main execution logic.
+            if #clients == 0 then
+                table.insert(output_lines, 'No active LSP clients found.')
+            else
+                table.insert(output_lines, 'Server capabilities for active LSP clients:')
+                for _, client in ipairs(clients) do
+                    table.insert(output_lines, '') -- Add a blank line for spacing between clients.
+                    table.insert(output_lines, string.format('--- Client: %s ---', client.name))
+
+                    -- Check if the client reported any server capabilities.
+                    if client.server_capabilities and next(client.server_capabilities) then
+                        format_capabilities(client.server_capabilities, 1)
+                    else
+                        table.insert(output_lines, '  No server capabilities found for this client.')
+                    end
+                end
+            end
+
+            -- Display the final formatted output in the scratch buffer.
+            show_in_scratch_buffer(output_lines)
+        end, { desc = '[d]ebug [l]sp' })
+
+        -- The following code creates a keymap to toggle inlay hints in your
+        -- code, if the language server you are using supports them
+        --
+
+        local inlay_hint = vim.lsp.protocol.Methods.textDocument_inlayHint
+        -- This may be unwanted, since they displace some of your code
+        if client and client.supports_method(client, inlay_hint) then
+            map('<leader>th', function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+            end, '[T]oggle Inlay [H]ints')
+        end
+    end,
+}
 -- # KEYMAPS SET IN OTHER FILES:
 -- <leader>
 --
 -- map commands in lua/lazy-plugins/lsp.lua
+--
+return M

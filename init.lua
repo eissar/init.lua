@@ -48,6 +48,12 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
+    -- {
+    --     'TheLeoP/powershell.nvim',
+    --     opts = {
+    --         bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
+    --     },
+    -- },
     {
         'L3MON4D3/LuaSnip',
     },
