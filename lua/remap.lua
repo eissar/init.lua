@@ -119,7 +119,7 @@ do -- Telescope bindings; see `:help telescope.builtin`
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
     vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
 
-    vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
+    vim.keymap.set('n', '<leader>su', builtin.commands, { desc = '[S]earch [U]ser commands' })
 
     local lsfn = function()
         builtin.buffers {
@@ -208,7 +208,6 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
 
         ---@param desc string
         local map = function(keys, func, desc)
-            print('DEBUG: Type of desc: ' .. vim.inspect(type(desc)) .. vim.inspect(desc))
             vim.keymap.set('n', keys, func, { buffer = event.buf, desc = desc }) -- desc = 'LSP: ' .. desc })
         end
 

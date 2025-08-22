@@ -429,5 +429,6 @@ vim.api.nvim_create_user_command('PopupWindow', PopupWindow, {})
 require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
 require 'autocmd' -- './lua/autocmd.lua'
+require 'usercmd' -- './lua/usercmd.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
-require 'plugins.iron-nvim' -- './lua/plugins/snippets.lua'
+-- require 'plugins.iron-nvim' --
