@@ -5,6 +5,20 @@ require 'plugins.markdown-functions'
 -- vim.api.nvim_set_keymap('n', '<leader>prm', ':lua openMarkdownInBrowser()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>prm', ':lua OpenMarkdownInBrowser()<cr>', { noremap = true, silent = true })
 
+-- require('telescope.themes').get_dropdown {
+--             winblend = 10,
+--             previewer = false,
+--         }
+
+vim.keymap.set('n', '<leader>gh', function()
+    local theme = require('telescope.themes').get_dropdown {
+        layout_config = {
+            width = 0.8,
+        },
+        previewer = false,
+    }
+    require('telescope.builtin').lsp_document_symbols(theme)
+end, { desc = '[G]et [H]eadings' })
 -- vim.keymap.set("n", "<leader>gt", ":lua moveCursorToTagsMarkdown()<cr>", { noremap = true, buffer = true})
 -- vim.keymap.set("n", "<leader>ih",":lua insertHeadingsFromMarkdownFile()<cr>", { noremap = true, buffer = true })
 -- vim.keymap.set("n", "<leader>[", ":lua insertWikiLink()<cr>", { noremap = true, buffer = true })
