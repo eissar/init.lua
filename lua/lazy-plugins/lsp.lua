@@ -157,64 +157,6 @@ return {
             --  - settings (table): Override the default settings passed when initializing the server.
             --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
             local servers = {
-                ---@type lspconfig.Config
-                ---@diagnostic disable-next-line: missing-fields
-                powershell_es = {
-                    capabilities = capabilities,
-                    bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
-                    shell = 'pwsh.exe',
-                    root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
-                    -- handlers = require('powershell').handlers,
-                    single_file_support = true,
-                    settings = {
-                        -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
-                        powershell = {
-                            scriptAnalysis = {
-                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
-                                enable = true,
-                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
-                                -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-                            },
-                            codeFormatting = {
-                                --enable = false
-                                -- [[ You can get more code formatting settings here: -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
-                                Preset = 'OTBS',
-                                useCorrectCasing = true,
-                                openBraceOnSameLine = true,
-                            },
-
-                            settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-
-                            integratedConsole = {
-                                showOnStartup = false,
-                                suppressStartupBanner = true,
-                            },
-
-                            -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-                            -- },
-
-                            -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
-                            --command = 'pwsh',
-                            --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
-                            -- command = 'pwsh',
-                            -- args = {
-                            --     '-NoProfile',
-                            --     '-Command',
-                            --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
-                            -- },
-                        },
-                    },
-                },
-                --[[
-                    From <https://github.com/PowerShell/PowerShellEditorServices/blob/main/docs/guide/getting_started.md#neovim>
-
-                    You can also set the bundled PSScriptAnalyzer's custom rule path like so:
-                    local custom_settings_path = home_directory .. '/PSScriptAnalyzerSettings.psd1'
-                    require('lspconfig')['powershell_es'].setup
-                    bundle_path = bundle_path,
-                    on_attach = on_attach,
-                    settings = { powershell = { scriptAnalysis = { settingsPath = custom_settings_path } } }
-                --]]
                 marksman = {},
                 gopls = {
                     settings = {
@@ -394,6 +336,44 @@ return {
                         require('lspconfig')[server_name].setup(server)
                     end,
                 },
+                -- "Special" configs which cant' be defined in the array since bundle_path
+                -- does not point to an executable file.
+                require('lspconfig').powershell_es.setup {
+                    bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
+                    root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
+                    settings = {
+                        -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
+                        powershell = {
+                            scriptAnalysis = {
+                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
+                                enable = true,
+                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
+                                -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+                                settingsPath = 'C:/Users/eshaa/Dropbox/Documents/Powershell/PSScriptAnalyzerSettings.psd1',
+                            },
+                            codeFormatting = {
+                                enable = true,
+                                -- [[ You can get more code formatting settings here: -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
+                                -- Preset = 'OTBS',
+                                -- useCorrectCasing = true,
+                                -- openBraceOnSameLine = true,
+                            },
+
+                            -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+                            -- },
+
+                            -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
+                            --command = 'pwsh',
+                            --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
+                            -- command = 'pwsh',
+                            -- args = {
+                            --     '-NoProfile',
+                            --     '-Command',
+                            --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
+                            -- },
+                        },
+                    },
+                },
             }
         end,
     },
@@ -496,7 +476,7 @@ return {
                     end,
                 },
                 completion = { completeopt = 'menu,menuone,noinsert' },
-                view = { docs = { auto_open = false } },
+                view = { docs = { auto_open = true } }, -- https://github.com/hrsh7th/nvim-cmp/issues/1088
                 experimental = {
                     ghost_text = true,
                 },
@@ -523,10 +503,10 @@ return {
 
                     ['<C-g>'] = function()
                         if cmp.visible_docs() then
-                            return cmp.close_docs()
+                            cmp.close_docs()
+                        else
+                            cmp.open_docs()
                         end
-
-                        return cmp.open_docs()
                     end,
 
                     -- Manually trigger a completion from nvim-cmp.
