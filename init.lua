@@ -48,6 +48,12 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
+    -- {
+    --     'TheLeoP/powershell.nvim',
+    --     opts = {
+    --         bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
+    --     },
+    -- },
     {
         'L3MON4D3/LuaSnip',
     },
@@ -189,7 +195,7 @@ require('lazy').setup({
         branch = 'master',
         opts = {
             compilers = { 'zig', 'gcc', 'clang' },
-            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'jsdoc' },
             -- Autoinstall languages that are not installed
             -- Install parsers synchronously (only applied to `ensure_installed`)
             sync_install = false,
@@ -423,5 +429,6 @@ vim.api.nvim_create_user_command('PopupWindow', PopupWindow, {})
 require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
 require 'autocmd' -- './lua/autocmd.lua'
+require 'usercmd' -- './lua/usercmd.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
-require 'plugins.iron-nvim' -- './lua/plugins/snippets.lua'
+-- require 'plugins.iron-nvim' --
