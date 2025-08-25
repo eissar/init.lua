@@ -191,9 +191,10 @@ do -- Telescope bindings; see `:help telescope.builtin`
 end
 
 do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
+    cc = require 'codecompanion'
     vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
-    -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
-    -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
+    vim.keymap.set('n', '<C-a>', '<cmd>CodeCompanionActions<cr>')
+    vim.keymap.set('v', '<C-a>', '<cmd>CodeCompanionActions<cr>')
     -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
     -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
     -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
