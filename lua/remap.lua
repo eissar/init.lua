@@ -192,7 +192,7 @@ end
 
 do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
     vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
-    vim.keymap.set('n', '<A-a>', '<cmd>CodeCompanionActions<cr>')
+    -- vim.keymap.set("n", "<C-a>", "<cmd>CodeCompanionActions<cr>")
     -- vim.keymap.set("v", "<C-a>", "<cmd>CodeCompanionActions<cr>")
     -- vim.keymap.set("n", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")
     -- vim.keymap.set("v", "<M-a>", "<cmd>CodeCompanionChat Toggle<cr>")

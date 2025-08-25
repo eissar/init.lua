@@ -78,7 +78,7 @@ vim.api.nvim_create_user_command('GetLspConfig', function(opts)
     vim.bo.swapfile = false
     vim.bo.filetype = 'lua'
 end, {
-    nargs = 1, -- name of the lsp
+    nargs = 1,
     desc = 'Get lspconfig settings for a server, with function descriptions.',
     complete = function()
         -- Provide completion for all available servers in lspconfig.
