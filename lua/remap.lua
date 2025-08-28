@@ -171,23 +171,36 @@ do -- Telescope bindings; see `:help telescope.builtin`
     vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
-    -- our picker function: colors
-    local colors = function(opts)
-        local pickers = require 'telescope.pickers'
-        local finders = require 'telescope.finders'
-        local conf = require('telescope.config').values
-        opts = opts or {}
-        pickers
-            .new(opts, {
-                prompt_title = 'colors',
-                finder = finders.new_table {
-                    results = GetMarkdownCatalog(),
-                },
-                sorter = conf.generic_sorter(opts),
-            })
-            :find()
-    end
-    vim.keymap.set('n', '<leader>sc', colors)
+
+    vim.keymap.set('n', '<leader>md', function()
+        require('telescope.builtin').find_files {
+            cwd = os.getenv 'CLOUD_DIR',
+            prompt_title = 'Markdown search',
+            find_command = {
+                'fd',
+                '--extension',
+                'md',
+            },
+        }
+    end, { desc = 'search [M]ark[D]own files' })
+
+    -- custom picker function: colors
+    -- local colors = function(opts)
+    --     local pickers = require 'telescope.pickers'
+    --     local finders = require 'telescope.finders'
+    --     local conf = require('telescope.config').values
+    --     opts = opts or {}
+    --     pickers
+    --         .new(opts, {
+    --             prompt_title = 'colors',
+    --             finder = finders.new_table {
+    --                 results = GetMarkdownCatalog(),
+    --             },
+    --             sorter = conf.generic_sorter(opts),
+    --         })
+    --         :find()
+    -- end
+    -- vim.keymap.set('n', '<leader>sc', colors)
 end
 
 do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
