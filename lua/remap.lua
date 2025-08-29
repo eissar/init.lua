@@ -172,17 +172,38 @@ do -- Telescope bindings; see `:help telescope.builtin`
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
 
-    vim.keymap.set('n', '<leader>md', function()
+    -- require('telescope.builtin').find_files {
+    --     cwd = os.getenv 'CLOUD_DIR',
+    --     prompt_title = 'Markdown search',
+    --     find_command = {
+    --         'fd',
+    --         '--extension',
+    --         'md',
+    --     },
+    -- }
+    -- it is too slow because my dropbox directory is
+    -- on a hard drive!
+    --
+    -- we need to use a search program that allows
+    -- indexing. by default, everything does. (sadly not FOSS.)
+    --
+    -- TODO: research NowGrep when mature.
+    --
+    -- everything has a commandline : <https://github.com/voidtools/es>
+    local function find_markdown()
         require('telescope.builtin').find_files {
             cwd = os.getenv 'CLOUD_DIR',
             prompt_title = 'Markdown search',
             find_command = {
-                'fd',
-                '--extension',
-                'md',
+                'es',
+                '/a-d', -- only files not directories
+                '-path',
+                os.getenv 'CLOUD_DIR',
             },
         }
-    end, { desc = 'search [M]ark[D]own files' })
+    end
+
+    vim.keymap.set('n', '<leader>md', find_markdown, { desc = 'search [M]ark[D]own files' })
 
     -- custom picker function: colors
     -- local colors = function(opts)
