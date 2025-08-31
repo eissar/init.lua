@@ -1,3 +1,19 @@
+-- local
+local log_override = {
+    enabled = false,
+    level = 'INFO', -- TRACE|DEBUG|ERROR|INFO
+    proxy_enabled = false,
+
+    proxy = nil,
+    allow_insecure = false,
+}
+
+-- Configure proxy settings based on proxy_enabled
+if log_override.proxy_enabled and log_override.enabled then
+    log_override.proxy = 'http://127.0.0.1:4141'
+    log_override.allow_insecure = true
+end
+
 local prompt_library = {
     ---@type PromptConfig
     ['Inline Document'] = {
@@ -34,10 +50,11 @@ local prompt_library = {
     },
 }
 local opts = {
+    log_level = log_override.level,
+
     adapters = {
         ollama = function()
             return require('codecompanion.adapters').extend('ollama', {
-                -- https://github.com/jcorbin/home/blob/0e18734fcd559a6c3093dd55fe5be75270bd255b/.config/nvim/lua/plugins/ai.lua#L13
                 env = {
                     url = 'http://workstation:11434',
                     chat_url = '/v1/chat/completions',
@@ -54,21 +71,53 @@ local opts = {
         end,
         gemini = function()
             return require('codecompanion.adapters').extend('gemini', {
-                -- url = 'https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${api_key}',
                 env = {
                     api_key = os.getenv 'geminiKey',
                     -- model = 'schema.model.default',
-                    -- model = 'gemini-2.5-flash',
+                    model = 'gemini-2.5-flash',
                 },
             })
         end,
+
+        openrouter = function()
+            return require('codecompanion.adapters').extend('openai_compatible', {
+                env = {
+                    url = 'https://openrouter.ai/api',
+                    chat_url = '/v1/chat/completions',
+
+                    -- name = 'gpt_oss_120b_cerebras',
+                    formatted_name = 'openrouter.ai',
+                    api_key = os.getenv 'OPENROUTER_KEY',
+
+                    -- model = 'openai/gpt-oss-120b:free',
+                },
+                schema = {
+                    model = {
+                        default = 'openai/gpt-oss-120b:free',
+                    },
+                },
+            })
+        end,
+
+        opts = {
+            allow_insecure = log_override.allow_insecure,
+            proxy = log_override.proxy,
+        },
     },
     strategies = {
         chat = {
-            adapter = 'gemini',
+            adapter = 'openrouter',
+            roles = {
+                ---The header name for the LLM's messages
+                ---@type string|fun(adapter: CodeCompanion.Adapter): string
+                llm = function(adapter)
+                    local title = adapter.env.formatted_name or adapter.formatted_name
+                    return (title .. ' (' .. adapter.schema.model.default .. ')')
+                end,
+            },
         },
         inline = {
-            adapter = 'gemini',
+            adapter = 'openrouter',
         },
         suggestion = {
             auto_trigger = true,
