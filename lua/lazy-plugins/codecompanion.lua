@@ -107,8 +107,8 @@ local opts = {
     strategies = {
         chat = {
             adapter = 'openrouter',
+            ---The header name for the LLM's messages
             roles = {
-                ---The header name for the LLM's messages
                 ---@type string|fun(adapter: CodeCompanion.Adapter): string
                 llm = function(adapter)
                     local title = adapter.env.formatted_name or adapter.formatted_name
