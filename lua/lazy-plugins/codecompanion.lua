@@ -91,9 +91,21 @@ local opts = {
 
                     -- model = 'openai/gpt-oss-120b:free',
                 },
+                handlers = {
+                    form_parameters = function(self, params, messages)
+                        local custom_params = {
+                            provider = {
+                                order = { 'cerebras' },
+                                -- sort = "throughput"
+                            },
+                        }
+                        return vim.tbl_deep_extend('error', params, custom_params)
+                    end,
+                },
                 schema = {
                     model = {
-                        default = 'openai/gpt-oss-120b:free',
+                        -- default = 'openai/gpt-oss-120b:free',
+                        default = 'openai/gpt-oss-120b',
                     },
                 },
             })
