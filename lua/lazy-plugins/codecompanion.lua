@@ -15,7 +15,6 @@ if log_override.proxy_enabled and log_override.enabled then
 end
 
 local prompt_library = {
-    ---@type PromptConfig
     ['Inline Document'] = {
         strategy = 'inline',
         description = 'Add documentation for code.',
@@ -49,84 +48,93 @@ local prompt_library = {
         },
     },
 }
+
+-- ---@type CodeCompanion.
 local opts = {
     log_level = log_override.level,
 
     adapters = {
-        ollama = function()
-            return require('codecompanion.adapters').extend('ollama', {
-                env = {
-                    url = 'http://workstation:11434',
-                    chat_url = '/v1/chat/completions',
-                },
-                schema = {
-                    -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
-                    -- phind-codellama:34b qwen2.5vl:7b
-                    name = 'qwen2.5vl:7b',
-                    model = {
-                        default = 'qwen2.5vl:7b',
+        ---@type CodeCompanion.HTTPAdapter{}
+        http = {
+            gemini = function()
+                ---@type CodeCompanion.HTTPAdapter
+                return require('codecompanion.adapters.http').extend('gemini', {
+                    type = 'http',
+                    env = {
+                        api_key = os.getenv 'geminiKey',
+                        -- model = 'schema.model.default',
+                        model = 'gemini-2.5-flash',
                     },
-                },
-            })
-        end,
-        gemini = function()
-            return require('codecompanion.adapters').extend('gemini', {
-                env = {
-                    api_key = os.getenv 'geminiKey',
-                    -- model = 'schema.model.default',
-                    model = 'gemini-2.5-flash',
-                },
-            })
-        end,
+                    schema = {
+                        -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
+                        -- phind-codellama:34b qwen2.5vl:7b
+                        name = 'qwen2.5vl:7b',
+                        model = {
+                            default = 'qwen2.5vl:7b',
+                        },
+                    },
+                })
+            end,
+            openrouter = function()
+                return require('codecompanion.adapters.http').extend('openai_compatible', {
+                    env = {
+                        url = 'https://openrouter.ai/api',
+                        chat_url = '/v1/chat/completions',
 
-        openrouter = function()
-            return require('codecompanion.adapters').extend('openai_compatible', {
-                env = {
-                    url = 'https://openrouter.ai/api',
-                    chat_url = '/v1/chat/completions',
+                        -- name = 'gpt_oss_120b_cerebras',
+                        formatted_name = 'openrouter.ai',
+                        api_key = os.getenv 'OPENROUTER_KEY',
 
-                    -- name = 'gpt_oss_120b_cerebras',
-                    formatted_name = 'openrouter.ai',
-                    api_key = os.getenv 'OPENROUTER_KEY',
-
-                    -- model = 'openai/gpt-oss-120b:free',
-                },
-                handlers = {
-                    form_parameters = function(self, params, messages)
-                        local custom_params = {
-                            provider = {
-                                order = { 'cerebras' },
-                                -- sort = "throughput"
+                        -- model = 'openai/gpt-oss-120b:free',
+                    },
+                    schema = {
+                        model = {
+                            -- order = 1,
+                            default = 'moonshotai/kimi-k2',
+                            choices = {
+                                'openai/gpt-oss-120b',
+                                'moonshotai/kimi-k2',
                             },
-                        }
-                        return vim.tbl_deep_extend('error', params, custom_params)
-                    end,
-                },
-                schema = {
-                    model = {
-                        -- default = 'openai/gpt-oss-120b:free',
-                        default = 'openai/gpt-oss-120b',
+                        },
                     },
-                },
-            })
-        end,
+                })
+            end,
+            tavily = function()
+                return require('codecompanion.adapters.http').extend('tavily', {
+                    env = {
+                        api_key = os.getenv 'TAVILY_API_KEY',
+                    },
+                })
+            end,
 
-        opts = {
-            allow_insecure = log_override.allow_insecure,
-            proxy = log_override.proxy,
+            opts = {
+                allow_insecure = log_override.allow_insecure,
+                proxy = log_override.proxy,
+                show_model_choices = true,
+            },
         },
     },
     strategies = {
         chat = {
             adapter = 'openrouter',
             ---The header name for the LLM's messages
-            roles = {
-                ---@type string|fun(adapter: CodeCompanion.Adapter): string
-                llm = function(adapter)
-                    local title = adapter.env.formatted_name or adapter.formatted_name
-                    return (title .. ' (' .. adapter.schema.model.default .. ')')
-                end,
-            },
+            -- roles = {
+            -- ---@type string|fun(adapter: CodeCompanion.HTTPAdapter): string
+            -- llm = function(adapter)
+            --     local title = adapter.env.formatted_name or adapter.formatted_name
+            --
+            --     local model
+            --     -- if type(adapter.model) == 'function' then
+            --     --     model = 'NULL'
+            --     -- end
+            --     -- elseif
+            --     --     adapter.schema.model
+            --     -- then
+            --
+            --     -- local model = adapter.schema.model.default or adapter.model.nice_name or adapter.model.name
+            --     return (title .. ' (' .. model .. ')')
+            -- end,
+            -- },
         },
         inline = {
             adapter = 'openrouter',
@@ -141,6 +149,9 @@ local opts = {
         },
         action_palette = {
             show_default_prompt_library = false, -- Show the default prompt library in the action palette?
+        },
+        chat = {
+            -- show_settings = true,
         },
     },
     prompt_library = prompt_library,
