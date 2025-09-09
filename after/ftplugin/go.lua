@@ -46,3 +46,18 @@ vim.treesitter.query.add_predicate('match_region?', match_region_predicate, { fo
 
 -- TODO:
 -- <https://github.com/Wansmer/nvim-config/blob/main/lua/modules/foldtext.lua>
+
+do -- MONKEY PATCH HACK TODO REMOVE LATER
+    local og_convert = vim.lsp.util.convert_input_to_markdown_lines
+
+    -- Override it
+    vim.lsp.util.convert_input_to_markdown_lines = function(input)
+        local lines = og_convert(input)
+        for i, line in ipairs(lines) do
+            if line:match '^%s*```' then
+                lines[i] = line:gsub('^%s+', '')
+            end
+        end
+        return lines
+    end
+end
