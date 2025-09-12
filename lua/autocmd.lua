@@ -51,3 +51,21 @@ vim.api.nvim_create_autocmd('User', {
         require('fidget').notify('Lazy Config reloaded', vim.log.levels.INFO)
     end,
 })
+
+-- for markdown files which are
+vim.api.nvim_create_autocmd('BufReadPost', {
+    pattern = '*.md',
+    once = true,
+    callback = function()
+        -- require('plugins.github').fetch(require('plugins.github').check_revision)
+
+        local buf_path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ':.'):gsub('^%.[/\\]', ''):gsub('\\\\', '/')
+        if buf_path == '' then
+            return
+        end
+
+        require('plugins.github').fetch(function()
+            require('plugins.github').check_remote_changes(buf_path)
+        end)
+    end,
+})
