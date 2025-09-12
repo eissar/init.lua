@@ -14,13 +14,7 @@ local fidget = require 'fidget'
 ---@return string|nil hash, string|nil err
 function M.get_git_hash(remote, rel_path, progress_handle)
     assert(remote and rel_path ~= '', 'branch ref/ filepath must not be empty')
-    local untracked_case = ("exists on disk, but not in 'HEAD'"):lower()
-
-    local progress_message = function(msg)
-        if progress_handle then
-            progress_handle:message(msg)
-        end
-    end
+    local untracked_case = (' exists on disk, but not in'):lower()
 
     local git_identifier = string.format('%s:%s', remote, rel_path)
 
@@ -29,7 +23,7 @@ function M.get_git_hash(remote, rel_path, progress_handle)
     local result = job:wait()
     if result.code ~= 0 then
         if result.stderr and string.find(result.stderr:lower(), untracked_case) then
-            progress_message 'file not tracked by local branch'
+            progress_handle.message = string.format('file not tracked by %s', remote)
             return nil, 'untracked'
         end
         print('unknown error retrieving hash for local file.\n', 'stderr', result.stderr)
@@ -95,20 +89,25 @@ M.check_remote_changes = async.wrap(function(buf_path)
         lsp_client = { name = 'git-check' },
     }
 
-    -- these two calls now block synchronously within the async.wrap thread
-    local local_hash, local_err = M.get_git_hash('HEAD', buf_path, progress_handle)
-    local remote_hash, remote_err = M.get_git_hash('origin/master', buf_path, progress_handle)
-
-    if local_err or not local_hash or local_hash == '' then
-        print('INVALID getting local hash from get_git_hash for', buf_path, local_err)
-        progress_handle:finish()
-        return
+    local function maybe_print(err, kind)
+        if err ~= 'untracked' and err then
+            print('INVALID getting', kind, 'hash from get_git_hash for', buf_path, err)
+        end
     end
 
-    if remote_err or not remote_hash or remote_hash == '' then
-        print('INVALID getting remote hash from get_git_hash for', buf_path, remote_err)
-        progress_handle:finish()
-        return
+    local local_hash, err = M.get_git_hash('HEAD', buf_path, progress_handle)
+    if err or not local_hash or local_hash == '' then
+        -- ignore case 'untracked' since we notify via progress_handle within get_git_hash
+        maybe_print(err, 'local')
+        return progress_handle:finish()
+    end
+
+    ---@diagnostic disable-next-line: redefined-local
+    local remote_hash, err = M.get_git_hash('origin/master', buf_path, progress_handle)
+
+    if err or not remote_hash or remote_hash == '' then
+        maybe_print(err, 'remote')
+        return progress_handle:finish()
     end
 
     if local_hash ~= remote_hash then
