@@ -55,7 +55,6 @@ vim.api.nvim_create_autocmd('User', {
 -- for markdown files which are
 vim.api.nvim_create_autocmd('BufReadPost', {
     pattern = '*.md',
-    once = true,
     callback = function()
         -- require('plugins.github').fetch(require('plugins.github').check_revision)
 
@@ -64,7 +63,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
             return
         end
 
-        require('plugins.github').fetch(function()
+        require('plugins.github').fetch(function() -- fetch has built in throttling
             require('plugins.github').check_remote_changes(buf_path)
         end)
     end,
