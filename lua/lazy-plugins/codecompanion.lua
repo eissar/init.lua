@@ -76,9 +76,9 @@ local opts = {
                     schema = {
                         -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
                         -- phind-codellama:34b qwen2.5vl:7b
-                        name = 'qwen2.5vl:7b',
+                        name = 'openai/gpt-oss-120b',
                         model = {
-                            default = 'qwen2.5vl:7b',
+                            default = 'openai/gpt-oss-120b',
                         },
                     },
                 })
