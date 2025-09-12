@@ -65,14 +65,6 @@ local opts = {
                         -- model = 'schema.model.default',
                         model = 'gemini-2.5-flash',
                     },
-                })
-            end,
-            ollama = function()
-                return require('codecompanion.adapters.http').extend('ollama', {
-                    env = {
-                        url = 'http://workstation:11434',
-                        chat_url = '/v1/chat/completions',
-                    },
                     schema = {
                         -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
                         -- phind-codellama:34b qwen2.5vl:7b

@@ -176,12 +176,6 @@ return {
                             parameterNames = true,
                             rangeVariableTypes = true,
                         },
-                        analyses = {
-                            nilness = true,
-                            unusedparams = true,
-                            unusedwrite = true,
-                            useany = true,
-                        },
                         experimentalPostfixCompletions = true,
                         staticcheck = true,
                         linksInHover = 'gopls',
