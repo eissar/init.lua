@@ -108,8 +108,8 @@ vim.keymap.set('n', '<leader>gh', function()
             -- attach_mappings = function(bufnr, map)
             --     return true -- use default mappings
             -- end,
-            layout_strategy = 'vertical',
-            layout_config = { width = 0.8, height = 0.55 },
+            layout_strategy = 'horizontal',
+            -- layout_config = { width = 0.8, height = 0.55 },
             push_cursor_on_edit = true,
             push_tagstack_on_edit = true,
         })
