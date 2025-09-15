@@ -332,14 +332,14 @@ return {
                                 enable = true,
                                 -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
                                 -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-                                settingsPath = 'C:/Users/eshaa/Dropbox/Documents/Powershell/PSScriptAnalyzerSettings.psd1',
+                                settingsPath = vim.fn.expand '~' .. '/.dotfiles/PSScriptAnalyzerSettings.psd1',
                             },
                             codeFormatting = {
                                 enable = true,
-                                -- [[ You can get more code formatting settings here: -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs ]]
-                                -- Preset = 'OTBS',
-                                -- useCorrectCasing = true,
-                                -- openBraceOnSameLine = true,
+                                -- You can get more code formatting settings here:
+                                -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs
+                                Preset = 'OTBS',
+                                useCorrectCasing = true,
                             },
 
                             -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
