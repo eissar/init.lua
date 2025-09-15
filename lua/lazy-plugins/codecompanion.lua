@@ -90,7 +90,7 @@ local opts = {
                     schema = {
                         model = {
                             -- order = 1,
-                            default = 'moonshotai/kimi-k2',
+                            default = 'openai/gpt-oss-120b',
                             choices = {
                                 'openai/gpt-oss-120b',
                                 'moonshotai/kimi-k2',
