@@ -68,3 +68,10 @@ vim.api.nvim_create_autocmd('BufReadPost', {
         end)
     end,
 })
+
+-- update codelens
+vim.api.nvim_create_autocmd({ 'CursorHold', 'InsertLeave' }, {
+    callback = function()
+        vim.lsp.codelens.refresh()
+    end,
+})

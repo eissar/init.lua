@@ -55,6 +55,7 @@ vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, { desc = '[G]oto [D]ef
 vim.keymap.set('n', '<leader>gD', vim.lsp.buf.declaration, { desc = '[G]oto [D]eclaration' })
 vim.keymap.set('n', '<leader>gi', vim.lsp.buf.implementation, { desc = '[G]oto [I]mplementation' })
 vim.keymap.set('n', '<leader>td', vim.lsp.buf.type_definition, { desc = '[G]oto [I]mplementation' })
+vim.keymap.set('n', '<leader>cc', vim.lsp.codelens.refresh, { desc = 'Run Codelens' })
 
 --vim.keymap.set('n', '<leader>ow', vim.cmd 'only', { desc = '[O]nly [I]mplementation' })
 vim.keymap.set('n', '<leader>zo', function()
