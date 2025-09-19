@@ -49,14 +49,50 @@ return {
                     spacing = 4,
                 },
             }
+            --only run once per buffer
+            local notified = {}
+            local function get_clients_and_notify(buf)
+                if notified[buf] then
+                    return
+                end
+                notified[buf] = true
+                -- print(vim.inspect(notified))
+                -- print(vim.inspect(buf))
+                local clients = vim.lsp.get_clients { bufnr = buf }
+                local names_set = {}
+                for _, client in ipairs(clients) do
+                    if type(client.name) == 'string' then
+                        -- ignore the specified servers
+                        if client.name ~= 'lua_ls' and client.name ~= 'gopls' then
+                            names_set[client.name] = true
+                        end
+                    end
+                end
+
+                local names = {}
+                for name, _ in pairs(names_set) do
+                    table.insert(names, name)
+                end
+
+                if #names == 0 then
+                    return
+                end
+
+                table.sort(names) -- optional: stable ordering
+                local message = (#names == 1) and names[1] or table.concat(names, ', ')
+                require('fidget').notify('[LSP]: ' .. message, vim.log.levels.INFO, { ttl = 0 })
+            end
             -- highlight references of word under cursor on CursorHold
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
                 callback = function(event)
+                    local buf = event.buf
+
                     -- The following two autocommands are used to highlight references of the
                     -- word under your cursor when your cursor rests there for a little while.
                     --    See `:help CursorHold` for information about when this is executed
                     --
+                    -- When you move your cursor, the highlights will be cleared (the second autocommand).
                     function GetTableLen(tbl)
                         local getN = 0
                         for n in pairs(tbl) do
@@ -65,32 +101,10 @@ return {
                         return getN
                     end
 
-                    -- When you move your cursor, the highlights will be cleared (the second autocommand).
-                    local client = vim.lsp.get_client_by_id(event.data.client_id)
-                    if client and type(client.name) == 'string' then
-                        local b = vim.api.nvim_get_current_buf()
-                        local clients = vim.lsp.get_clients { bunr = b }
-                        -- client.name for client in clients
-                        local names_len = 0
-                        local names = {}
-                        for _, c in ipairs(clients) do
-                            local nm = c.name
-                            if nm == 'lua_ls' or nm == 'gopls' then
-                                return
-                            else
-                                names_len = names_len + 1
-                                -- filter only LSPs that don't show any notification when they're loaded
-                                table.insert(names, nm)
-                            end
-                        end
-
-                        local clean_names = ''
-                        if names_len == 1 then
-                            clean_names = names[1]
-                        else
-                            clean_names = table.concat(names, ', ')
-                        end
-                        require('fidget').notify([[Lsp Loaded: ]] .. clean_names, vim.log.levels.INFO, { ttl = 0 })
+                    do
+                        vim.defer_fn(function()
+                            get_clients_and_notify(buf)
+                        end, 2000)
                     end
 
                     if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
@@ -356,6 +370,18 @@ return {
                             -- },
                         },
                     },
+                },
+
+                require('lspconfig').ast_grep.setup {
+                    -- these are the default options, you only need to specify
+                    -- options you'd like to change from the default
+                    cmd = { 'ast-grep', 'lsp' },
+                    -- i'll just manually manage this. could do deep extend but w/e
+                    filetypes = { -- https://ast-grep.github.io/reference/languages.html
+                        'md',
+                        'markdown',
+                    },
+                    root_dir = require('lspconfig.util').root_pattern('sgconfig.yaml', 'sgconfig.yml'),
                 },
             }
         end,
