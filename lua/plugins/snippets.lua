@@ -258,6 +258,22 @@ do --#region JS/TS
     luasnip.add_snippets('typescript', js_snips)
 end --#endregion
 
+do --#region Go
+    local go_snips = {}
+    do -- immediately invoked function expression
+        local snip = {
+            txt 'func() {',
+            txt { '', '\t' },
+            insert(1, ''),
+            txt { '', '' },
+            txt '}()',
+        }
+        table.insert(go_snips, new_snippet_with_alias('iife', snip))
+    end
+
+    luasnip.add_snippets('go', go_snips)
+end --#endregion
+
 --[[
     --#region ALL
     local term_snips = {}
