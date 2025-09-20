@@ -94,6 +94,7 @@ local opts = {
                             choices = {
                                 'openai/gpt-oss-120b',
                                 'moonshotai/kimi-k2',
+                                'anthropic/claude-sonnet-4',
                             },
                         },
                     },
