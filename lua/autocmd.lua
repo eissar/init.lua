@@ -16,12 +16,19 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
     command = 'set filetype=term',
     group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
 })
--- set filetype for sql files
+-- set .gohtml ft = html
 vim.api.nvim_create_autocmd('BufWinEnter', {
-    pattern = '*.tsql',
-    command = '',
+    pattern = '*.gohtml',
+    command = 'set filetype=html',
     group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
 })
+
+-- set filetype for sql files
+-- vim.api.nvim_create_autocmd('BufWinEnter', {
+--     pattern = '*.tsql',
+--     command = '',
+--     group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
+-- })
 
 -- removes trailing whitespace on save
 vim.api.nvim_create_autocmd('BufWritePre', {
