@@ -52,6 +52,9 @@ local prompt_library = {
 -- ---@type CodeCompanion.
 local opts = {
     log_level = log_override.level,
+    log_prompts = true,
+    log_max_size = 10, -- Set max log file size to 10 MB
+    log_max_files = 5, -- Keep a maximum of 5 old log files
 
     adapters = {
         ---@type CodeCompanion.HTTPAdapter{}
@@ -90,10 +93,11 @@ local opts = {
                     schema = {
                         model = {
                             -- order = 1,
-                            default = 'openai/gpt-oss-120b',
+                            default = 'z-ai/glm-4.5',
                             choices = {
                                 'openai/gpt-oss-120b',
-                                'moonshotai/kimi-k2',
+                                'z-ai/glm-4.5',
+                                -- 'moonshotai/kimi-k2',
                                 'anthropic/claude-sonnet-4',
                             },
                         },
