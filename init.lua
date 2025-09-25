@@ -358,5 +358,6 @@ require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
 require 'autocmd' -- './lua/autocmd.lua'
 require 'usercmd' -- './lua/usercmd.lua'
+require 'exrc' -- './lua/exrc.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
 -- require 'plugins.iron-nvim' --
