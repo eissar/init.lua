@@ -156,12 +156,14 @@ return {
             --  - settings (table): Override the default settings passed when initializing the server.
             --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
             local servers = {
+
+                emmet_ls = {},
                 marksman = {},
                 -- local vale_ls = require("lspconfig.configs.vale_ls")
                 vale_ls = {
                     cmd = { 'vale-ls' },
                     filetypes = { 'markdown', 'text', 'tex', 'rst' },
-                    root_dir = util.root_pattern '.vale.ini',
+                    root_dir = require('lspconfig.util').root_pattern '.vale.ini',
                     single_file_support = true,
                 },
                 gopls = {
