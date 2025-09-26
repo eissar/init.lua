@@ -205,3 +205,7 @@ vim.api.nvim_create_user_command('CodeCompanionSwitchAdapter', function(opts)
         end)
     end)
 end, { desc = 'Switch CodeCompanion adapter (cycle through available adapters)' })
+
+vim.api.nvim_create_user_command('Notifications', function()
+    require('fidget').notification.show_history()
+end, { desc = 'Get fidget notification history' })
