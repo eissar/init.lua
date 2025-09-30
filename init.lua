@@ -48,6 +48,17 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
+    {
+        'echasnovski/mini.diff',
+        version = false,
+        config = function()
+            local diff = require 'mini.diff'
+            diff.setup {
+                source = diff.gen_source.none(),
+            }
+        end,
+    },
+
     -- {
     --     'TheLeoP/powershell.nvim',
     --     opts = {
@@ -358,6 +369,5 @@ require 'remap' -- './lua/remap.lua'
 require 'settings' -- './lua/settings.lua'
 require 'autocmd' -- './lua/autocmd.lua'
 require 'usercmd' -- './lua/usercmd.lua'
-require 'exrc' -- './lua/exrc.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
 -- require 'plugins.iron-nvim' --
