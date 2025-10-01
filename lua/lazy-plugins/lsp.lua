@@ -27,8 +27,8 @@ return {
         },
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
-            { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-            'williamboman/mason-lspconfig.nvim',
+            { 'mason-org/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+            'mason-org/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
 
             -- Useful status updates for LSP.
@@ -82,53 +82,14 @@ return {
                 local message = (#names == 1) and names[1] or table.concat(names, ', ')
                 require('fidget').notify('[LSP]: ' .. message, vim.log.levels.INFO, { ttl = 0 })
             end
-            -- highlight references of word under cursor on CursorHold
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
                 callback = function(event)
                     local buf = event.buf
 
-                    -- The following two autocommands are used to highlight references of the
-                    -- word under your cursor when your cursor rests there for a little while.
-                    --    See `:help CursorHold` for information about when this is executed
-                    --
-                    -- When you move your cursor, the highlights will be cleared (the second autocommand).
-                    function GetTableLen(tbl)
-                        local getN = 0
-                        for n in pairs(tbl) do
-                            getN = getN + 1
-                        end
-                        return getN
-                    end
-
-                    do
-                        vim.defer_fn(function()
-                            get_clients_and_notify(buf)
-                        end, 2000)
-                    end
-
-                    if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-                        local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-                        vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-                            buffer = event.buf,
-                            group = highlight_augroup,
-                            callback = vim.lsp.buf.document_highlight,
-                        })
-
-                        vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-                            buffer = event.buf,
-                            group = highlight_augroup,
-                            callback = vim.lsp.buf.clear_references,
-                        })
-
-                        vim.api.nvim_create_autocmd('LspDetach', {
-                            group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-                            callback = function(event2)
-                                vim.lsp.buf.clear_references()
-                                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-                            end,
-                        })
-                    end
+                    vim.defer_fn(function()
+                        get_clients_and_notify(buf)
+                    end, 2000)
                 end,
             })
 
@@ -146,28 +107,21 @@ return {
             }
             capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-            -- Enable the following language servers
-            --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-            --
-            --  Add any additional override configuration in the following tables. Available keys are:
-            --  - cmd (table): Override the default command used to start the server
-            --  - filetypes (table): Override the default list of associated filetypes for the server
-            --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-            --  - settings (table): Override the default settings passed when initializing the server.
-            --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-            local servers = {
+            -- .setup will auto download
+            require('mason').setup()
+            require('mason-lspconfig').setup {
+                ensure_installed = { 'gopls' }, -- Automatically install gopls
+                automatic_installation = true,
+            }
+            -- do NOT call mason setup handlers.
 
-                emmet_ls = {},
-                marksman = {},
-                -- local vale_ls = require("lspconfig.configs.vale_ls")
-                vale_ls = {
-                    root_dir = require('lspconfig.util').root_pattern { '.vale.ini' },
-                    cmd = { 'vale-ls' },
-                    filetypes = { 'markdown', 'text', 'tex', 'rst' },
-                    single_file_support = true,
-                },
-                gopls = {
-                    settings = {
+            vim.lsp.config('gopls', {
+                capabilities = capabilities,
+                filetypes = { 'go', 'gomod' },
+                cmd = { vim.fn.stdpath 'data' .. '/mason/bin/gopls.cmd' },
+                settings = {
+                    gopls = {
+                        -- buildFlags = { '' },
                         gofumpt = true,
                         analyses = {
                             nilness = true,
@@ -191,204 +145,185 @@ return {
                         directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                     },
                 },
-                pyright = {
-                    single_file_support = true,
-                },
-                jsonls = {
-                    settings = {
-                        schemas = {
-                            {
-                                fileMatch = { 'deno.json', 'deno.jsonc' },
-                                url = 'https://github.com/denoland/deno/blob/main/cli/schemas/config-file.v1.json',
-                            },
-                        },
-                    },
-                },
-                -- sqls = {
-                --     single_file_support = true,
-                --     filetypes = { 'sql', 'mssql' },
-                --     on_attach = function(client)
-                --         client.server_capabilities.documentFormattingProvider = false
-                --         client.server_capabilities.documentRangeFormattingProvider = false
-                --     end,
-                --     --     -- do not configure here. edit config at: ['~\.config\sqls\config.yml'] connections = { alias = "sakila_master", driver = "sqlite3", dataSourceName = "file:/Users/eshaa/sakila_master.db", }
-                -- },
-                -- tsserver = {},
-                eslint = {
-                    filetypes = { 'javascript' },
-                    --  filetypes (table): Override the default list of associated filetypes for the server
-                },
+            })
+            vim.lsp.enable 'gopls'
 
-                lua_ls = {
-                    -- cmd = {...},
-                    -- filetypes = { ...},
-                    -- capabilities = {},
-                    settings = {
-                        Lua = {
-                            completion = {
-                                callSnippet = 'Replace',
-                            },
-                            format = {
-                                enable = true,
-                                defaultConfig = {
-                                    ---@type "keep"|"always"|"same_line"|"replace_with_newline"|"never"
-                                    end_statement_with_semicolon = 'always',
-                                    quote_style = 'single',
-                                },
-                            },
-                            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-                            -- diagnostics = { disable = { 'missing-fields' } },
-                        },
-                    },
-                },
-                html = {},
-                denols = {
-                    root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
-                    settings = {},
-                    init_options = {
-                        -- lint = true,
-                        unstable = true,
-                    },
-                },
-                -- ltex = { bundle_path = 'C:/Users/eshaa/Downloads/ltex-ls-16.0.0-windows-x64', },
-                -- lemminx = {},
-                -- clangd = {},
-                -- :h omnisharp
-                --omnisharp = {
-                --    cmd = { 'C:/Users/eshaa/Dropbox/Application_Files/lsp/omnisharp/OmniSharp.exe', '--languageserver', '--hostPID', tostring(vim.fn.getpid()) },
-                --    settings = {
-                --        FormattingOptions = {
-                --            -- Enables support for reading code style, naming convention and analyzer
-                --            -- settings from .editorconfig.
-                --            EnableEditorConfigSupport = true,
-                --            -- Specifies whether 'using' directives should be grouped and sorted during
-                --            -- document formatting.
-                --            OrganizeImports = nil,
-                --        },
-                --        RoslynExtensionsOptions = {
-                --            -- Enables support for roslyn analyzers, code fixes and rulesets.
-                --            EnableAnalyzersSupport = nil,
-                --            enableDecompilationSupport = true,
-                --            enableImportCompletion = true,
-                --            enableAnalyzersSupport = true,
-                --            diagnosticWorkersThreadCount = 8,
-                --        },
-                --    },
-                --},
-                --csharp_ls = {
-                --    handlers = {
-                --        ['textDocument/definition'] = require('csharpls_extended').handler,
-                --        ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
-                --    },
-                --    --cmd = { csharp_ls },
-                --},
-                fsautocomplete = {
-                    cmd = { 'fsautocomplete', '--adaptive-lsp-server-enabled' },
-                    settings = {
-                        FSharp = {
-                            EnableReferenceCodeLens = true,
-                            ExternalAutocomplete = true,
-                            InterfaceStubGeneration = true,
-                            InterfaceStubGenerationMethodBody = 'failwith "Not Implemented"',
-                            InterfaceStubGenerationObjectIdentifier = 'this',
-                            Linter = true,
-                            RecordStubGeneration = true,
-                            RecordStubGenerationBody = 'failwith "Not Implemented"',
-                            ResolveNamespaces = true,
-                            SimplifyNameAnalyzer = true,
-                            UnionCaseStubGeneration = true,
-                            UnionCaseStubGenerationBody = 'failwith "Not Implemented"',
-                            UnusedDeclarationsAnalyzer = true,
-                            UnusedOpensAnalyzer = true,
-                            UseSdkScripts = true,
-                            keywordsAutocomplete = true,
-                        },
-                    },
-                },
-            }
+            vim.lsp.config('emmet_ls', {})
+            vim.lsp.enable 'emmet_ls'
 
-            --[[
-                Ensure the servers and tools above are installed
-                To check the current status of installed tools and/or manually install
-                other tools, you can run
-                  :Mason
-                You can press `g?` for help in this menu.
-            --]]
-            require('mason').setup()
+            vim.lsp.config('vale_ls', {
+                cmd = { 'vale-ls' },
+                filetypes = { 'markdown', 'text', 'tex', 'rst' },
+                root_dir = require('lspconfig.util').root_pattern '.vale.ini',
+                single_file_support = true,
+            })
+            vim.lsp.enable 'vale_ls'
+
+            -- vim.lsp.config('marksman', require('lspconfig.configs').)
+            -- vim.lsp.enable 'marksman'
+            vim.lsp.config('lua_ls', {
+                -- cmd = {...},
+                -- filetypes = { ...},
+                -- capabilities = {},
+                settings = {
+                    Lua = {
+                        completion = {
+                            callSnippet = 'Replace',
+                        },
+                        format = {
+                            enable = true,
+                            defaultConfig = {
+                                ---@type "keep"|"always"|"same_line"|"replace_with_newline"|"never"
+                                end_statement_with_semicolon = 'always',
+                                quote_style = 'single',
+                            },
+                        },
+                        -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+                        -- diagnostics = { disable = { 'missing-fields' } },
+                    },
+                },
+            })
+
+            vim.lsp.config('jsonls', {
+                settings = {
+                    schemas = {
+                        {
+                            fileMatch = { 'deno.json', 'deno.jsonc' },
+                            url = 'https://github.com/denoland/deno/blob/main/cli/schemas/config-file.v1.json',
+                        },
+                    },
+                },
+            })
+            vim.lsp.enable 'jsonls'
+
+            vim.lsp.config('eslint', {
+                filetypes = { 'javascript' },
+            })
+            vim.lsp.enable 'eslint'
+
+            vim.lsp.config('html', {})
+            vim.lsp.enable 'html'
+
+            vim.lsp.config('denols', {
+                root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
+                settings = {},
+                init_options = {
+                    -- lint = true,
+                    unstable = true,
+                },
+            })
+            vim.lsp.enable 'denols'
+
+            vim.lsp.config('fsautocomplete', {
+                cmd = { 'fsautocomplete', '--adaptive-lsp-server-enabled' },
+                settings = {
+                    FSharp = {
+                        EnableReferenceCodeLens = true,
+                        ExternalAutocomplete = true,
+                        InterfaceStubGeneration = true,
+                        InterfaceStubGenerationMethodBody = 'failwith "Not Implemented"',
+                        InterfaceStubGenerationObjectIdentifier = 'this',
+                        Linter = true,
+                        RecordStubGeneration = true,
+                        RecordStubGenerationBody = 'failwith "Not Implemented"',
+                        ResolveNamespaces = true,
+                        SimplifyNameAnalyzer = true,
+                        UnionCaseStubGeneration = true,
+                        UnionCaseStubGenerationBody = 'failwith "Not Implemented"',
+                        UnusedDeclarationsAnalyzer = true,
+                        UnusedOpensAnalyzer = true,
+                        UseSdkScripts = true,
+                        keywordsAutocomplete = true,
+                    },
+                },
+            })
+
+            -- require('mason').setup()
 
             -- You can add other tools here that you want Mason to install
             -- for you, so that they are available from within Neovim.
-            local ensure_installed = vim.tbl_keys(servers or {})
-            vim.list_extend(ensure_installed, {
-                'stylua', -- formatter for lua
-                -- 'sleek', --formatter for sql
-                'sqlfluff', --linter for sql
-                'prettierd', -- js formatter
-            })
-            ---@diagnostic disable-next-line: missing-fields
-
-            require('mason-lspconfig').setup {
-                handlers = {
-                    function(server_name)
-                        local server = servers[server_name] or {}
-                        -- This handles overriding only values explicitly passed
-                        -- by the server configuration above. Useful when disabling
-                        -- certain features of an LSP (for example, turning off formatting for tsserver)
-                        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-                        require('lspconfig')[server_name].setup(server)
-                    end,
-                },
-                -- "Special" configs which cant' be defined in the array since bundle_path
-                -- does not point to an executable file.
-                require('lspconfig').powershell_es.setup {
-                    bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
-                    root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
-                    settings = {
-                        -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
-                        powershell = {
-                            scriptAnalysis = {
-                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
-                                enable = true,
-                                -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
-                                -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-                                settingsPath = vim.fn.expand '~' .. '/.dotfiles/PSScriptAnalyzerSettings.psd1',
-                            },
-                            codeFormatting = {
-                                enable = true,
-                                -- You can get more code formatting settings here:
-                                -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs
-                                Preset = 'OTBS',
-                                useCorrectCasing = true,
-                            },
-
-                            -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-                            -- },
-
-                            -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
-                            --command = 'pwsh',
-                            --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
-                            -- command = 'pwsh',
-                            -- args = {
-                            --     '-NoProfile',
-                            --     '-Command',
-                            --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
-                            -- },
-                        },
-                    },
-                },
-
-                require('lspconfig').ast_grep.setup {
-                    -- these are the default options, you only need to specify
-                    -- options you'd like to change from the default
-                    cmd = { 'ast-grep', 'lsp' },
-                    -- i'll just manually manage this. could do deep extend but w/e
-                    filetypes = { -- https://ast-grep.github.io/reference/languages.html
-                        'md',
-                        'markdown',
-                    },
-                    root_dir = require('lspconfig.util').root_pattern('sgconfig.yaml', 'sgconfig.yml'),
-                },
-            }
+            -- local ensure_installed = vim.tbl_keys(servers or {})
+            -- vim.list_extend(ensure_installed, {
+            --     'stylua', -- formatter for lua
+            --     -- 'sleek', --formatter for sql
+            --     'sqlfluff', --linter for sql
+            --     'prettierd', -- js formatter
+            -- })
+            -- ---@diagnostic disable-next-line: missing-fields
+            --
+            -- require('mason-lspconfig').setup {
+            --     automatic_installation = false,
+            --     handlers = {
+            --         function(server_name)
+            --             print(server_name)
+            --             if server_name == 'gopls' then
+            --                 return
+            --             end
+            --
+            --             local server = servers[server_name] or {}
+            --
+            --             print 'AHH'
+            --             vim.notify 'AHH'
+            --
+            --             -- This handles overriding only values explicitly passed
+            --             -- by the server configuration above. Useful when disabling
+            --             -- certain features of an LSP (for example, turning off formatting for tsserver)
+            --             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+            --             require('lspconfig')[server_name].setup(server)
+            --         end,
+            --     },
+            --
+            --     -- "Special" configs which cant' be defined in the array since bundle_path
+            --     -- does not point to an executable file.
+            --     require('lspconfig').powershell_es.setup {
+            --         bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
+            --         root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
+            --         settings = {
+            --             -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
+            --             powershell = {
+            --                 scriptAnalysis = {
+            --                     -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
+            --                     enable = true,
+            --                     -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
+            --                     -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+            --                     settingsPath = vim.fn.expand '~' .. '/.dotfiles/PSScriptAnalyzerSettings.psd1',
+            --                 },
+            --                 codeFormatting = {
+            --                     enable = true,
+            --                     -- You can get more code formatting settings here:
+            --                     -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs
+            --                     Preset = 'OTBS',
+            --                     useCorrectCasing = true,
+            --                 },
+            --
+            --                 -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
+            --                 -- },
+            --
+            --                 -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
+            --                 --command = 'pwsh',
+            --                 --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
+            --                 -- command = 'pwsh',
+            --                 -- args = {
+            --                 --     '-NoProfile',
+            --                 --     '-Command',
+            --                 --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
+            --                 -- },
+            --             },
+            --         },
+            --     },
+            --
+            --     require('lspconfig').ast_grep.setup {
+            --         -- these are the default options, you only need to specify
+            --         -- options you'd like to change from the default
+            --         cmd = { 'ast-grep', 'lsp' },
+            --         -- i'll just manually manage this. could do deep extend but w/e
+            --         filetypes = { -- https://ast-grep.github.io/reference/languages.html
+            --             'md',
+            --             'markdown',
+            --         },
+            --         root_dir = require('lspconfig.util').root_pattern('sgconfig.yaml', 'sgconfig.yml'),
+            --     },
+            -- }
         end,
     },
 
