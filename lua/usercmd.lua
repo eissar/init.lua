@@ -209,3 +209,18 @@ end, { desc = 'Switch CodeCompanion adapter (cycle through available adapters)' 
 vim.api.nvim_create_user_command('Notifications', function()
     require('fidget').notification.show_history()
 end, { desc = 'Get fidget notification history' })
+
+local function show_diff_since_last_saved()
+    local current_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local file_path = vim.api.nvim_buf_get_name(0)
+
+    if vim.fn.filereadable(file_path) == 1 then
+        local saved_content = vim.fn.readfile(file_path)
+        local diff = vim.diff(table.concat(current_content, '\n'), table.concat(saved_content, '\n'))
+        print(diff)
+    else
+        print "File not saved yet or doesn't exist"
+    end
+end
+
+vim.api.nvim_create_user_command('DiffSinceSaved', show_diff_since_last_saved, {})
