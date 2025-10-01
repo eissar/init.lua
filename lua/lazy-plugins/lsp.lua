@@ -161,9 +161,9 @@ return {
                 marksman = {},
                 -- local vale_ls = require("lspconfig.configs.vale_ls")
                 vale_ls = {
+                    root_dir = require('lspconfig.util').root_pattern { '.vale.ini' },
                     cmd = { 'vale-ls' },
                     filetypes = { 'markdown', 'text', 'tex', 'rst' },
-                    root_dir = require('lspconfig.util').root_pattern '.vale.ini',
                     single_file_support = true,
                 },
                 gopls = {
