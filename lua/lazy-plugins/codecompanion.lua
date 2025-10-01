@@ -93,17 +93,80 @@ local opts = {
                     schema = {
                         model = {
                             -- order = 1,
-                            default = 'z-ai/glm-4.5',
-                            choices = {
-                                'openai/gpt-oss-120b',
-                                'z-ai/glm-4.5',
-                                -- 'moonshotai/kimi-k2',
-                                'anthropic/claude-sonnet-4',
-                            },
+                            default = 'deepseek/deepseek-chat-v3.1',
+                            -- default = 'z-ai/glm-4.5',
+                            -- choices = {
+                            --     'openai/gpt-oss-120b',
+                            --     'z-ai/glm-4.5',
+                            --     -- 'moonshotai/kimi-k2',
+                            --     'anthropic/claude-sonnet-4',
+                            -- },
+                        },
+                    },
+                    body = {
+                        -- https://openrouter.ai/docs/features/provider-routing#ordering-specific-providers
+                        provider = {
+                            order = { 'chutes', 'vertex', 'fireworks' },
+                            -- allow_fallbacks = false,
+                        },
+                        temperature = 0.1,
+                        verbosity = 'low',
+                        -- quantizations = 'fp8',
+                    },
+                })
+            end,
+            openrouter_groq = function()
+                return require('codecompanion.adapters.http').extend('openai_compatible', {
+                    env = {
+                        url = 'https://openrouter.ai/api',
+                        chat_url = '/v1/chat/completions',
+
+                        -- name = 'gpt_oss_120b_cerebras',
+                        formatted_name = 'openrouter.ai',
+                        api_key = os.getenv 'OPENROUTER_KEY',
+
+                        -- model = 'openai/gpt-oss-120b:free',
+                    },
+                    schema = {
+                        model = {
+                            -- order = 1,
+                            default = 'moonshotai/kimi-k2-0905',
+                            -- choices = {
+                            --     'openai/gpt-oss-120b',
+                            --     'z-ai/glm-4.5',
+                            --     -- 'moonshotai/kimi-k2',
+                            --     'anthropic/claude-sonnet-4',
+                            -- },
+                        },
+                    },
+                    body = {
+                        -- https://openrouter.ai/docs/features/provider-routing#ordering-specific-providers
+                        provider = {
+                            order = { 'groq' },
+                            allow_fallbacks = false,
                         },
                     },
                 })
             end,
+            ollama = function()
+                ---@type CodeCompanion.HTTPAdapter
+                return require('codecompanion.adapters.http').extend('ollama', {
+                    type = 'http',
+                    schema = {
+                        -- huggingface.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF:latest, codellama:7b-code, phi4:latest, llama3.3:latest, llama3.2:latest
+                        -- phind-codellama:34b qwen2.5vl:7b
+                        -- name = 'openai/gpt-oss-120b',
+                        model = {
+                            default = 'codestral:22b',
+                        },
+                        host = {
+                            default = 'ei-workstation',
+                        },
+                        port = { default = 11434 },
+                    },
+                })
+            end,
+
             tavily = function()
                 return require('codecompanion.adapters.http').extend('tavily', {
                     env = {
