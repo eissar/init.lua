@@ -48,16 +48,6 @@ vim.opt.rtp:prepend(lazypath)
 --
 ---@diagnostic disable-next-line: undefined-field
 require('lazy').setup({
-    {
-        'echasnovski/mini.diff',
-        version = false,
-        config = function()
-            local diff = require 'mini.diff'
-            diff.setup {
-                source = diff.gen_source.none(),
-            }
-        end,
-    },
 
     -- {
     --     'TheLeoP/powershell.nvim',
