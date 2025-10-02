@@ -1,3 +1,4 @@
+local nvim_data = vim.fn.stdpath('data')
 return {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -28,97 +29,93 @@ return {
         dependencies = {
             -- Automatically install LSPs and related tools to stdpath for Neovim
             { 'mason-org/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-            'mason-org/mason-lspconfig.nvim',
+            -- 'mason-org/mason-lspconfig.nvim',
             'WhoIsSethDaniel/mason-tool-installer.nvim',
 
             -- Useful status updates for LSP.
             -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-            { 'j-hui/fidget.nvim', opts = {} },
+            { 'j-hui/fidget.nvim',    opts = {} },
 
             -- Allows extra capabilities provided by nvim-cmp
             'hrsh7th/cmp-nvim-lsp',
         },
         config = function()
             -- diagnostic virtual text, see `:help vim.diagnostic.config`
-            vim.diagnostic.config {
+            vim.diagnostic.config({
                 virtual_text = {
                     prefix = '■',
                     format = function(diagnostic)
-                        return string.format('%s [%s] ', diagnostic.message, diagnostic.source)
+                        return string.format('%s [%s] ', diagnostic.message, diagnostic.source);
                     end,
                     spacing = 4,
                 },
-            }
+            });
             --only run once per buffer
-            local notified = {}
+            local notified = {};
             local function get_clients_and_notify(buf)
                 if notified[buf] then
-                    return
-                end
-                notified[buf] = true
+                    return;
+                end;
+                notified[buf] = true;
                 -- print(vim.inspect(notified))
                 -- print(vim.inspect(buf))
-                local clients = vim.lsp.get_clients { bufnr = buf }
-                local names_set = {}
+                local clients = vim.lsp.get_clients({ bufnr = buf });
+                local names_set = {};
                 for _, client in ipairs(clients) do
                     if type(client.name) == 'string' then
                         -- ignore the specified servers
                         if client.name ~= 'lua_ls' and client.name ~= 'gopls' then
-                            names_set[client.name] = true
-                        end
-                    end
-                end
+                            names_set[client.name] = true;
+                        end;
+                    end;
+                end;
 
-                local names = {}
+                local names = {};
                 for name, _ in pairs(names_set) do
-                    table.insert(names, name)
-                end
+                    table.insert(names, name);
+                end;
 
                 if #names == 0 then
-                    return
-                end
+                    return;
+                end;
 
-                table.sort(names) -- optional: stable ordering
-                local message = (#names == 1) and names[1] or table.concat(names, ', ')
-                require('fidget').notify('[LSP]: ' .. message, vim.log.levels.INFO, { ttl = 0 })
-            end
+                table.sort(names); -- optional: stable ordering
+                local message = (#names == 1) and names[1] or table.concat(names, ', ');
+                require('fidget').notify('[LSP]: ' .. message, vim.log.levels.INFO, { ttl = 0 });
+            end;
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
                 callback = function(event)
-                    local buf = event.buf
+                    local buf = event.buf;
 
                     vim.defer_fn(function()
-                        get_clients_and_notify(buf)
-                    end, 2000)
+                        get_clients_and_notify(buf);
+                    end, 2000);
                 end,
-            })
+            });
 
             -- define keymaps in remap
-            vim.api.nvim_create_autocmd('LspAttach', require('remap').LspAttachAutoCmd)
+            vim.api.nvim_create_autocmd('LspAttach', require('remap').LspAttachAutoCmd);
 
             -- LSP servers and clients are able to communicate to each other what features they support.
             --  By default, Neovim doesn't support everything that is in the LSP specification.
             --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
             --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            local capabilities = vim.lsp.protocol.make_client_capabilities();
             capabilities.textDocument.foldingRange = {
                 dynamicRegistration = false,
                 lineFoldingOnly = true,
-            }
-            capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+            };
+            capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities());
 
             -- .setup will auto download
-            require('mason').setup()
-            require('mason-lspconfig').setup {
-                ensure_installed = { 'gopls' }, -- Automatically install gopls
-                automatic_installation = true,
-            }
+            require('mason').setup();
             -- do NOT call mason setup handlers.
 
             vim.lsp.config('gopls', {
                 capabilities = capabilities,
                 filetypes = { 'go', 'gomod' },
-                cmd = { vim.fn.stdpath 'data' .. '/mason/bin/gopls.cmd' },
+                cmd = { nvim_data .. '/mason/bin/gopls.cmd' },
                 settings = {
                     gopls = {
                         -- buildFlags = { '' },
@@ -145,25 +142,24 @@ return {
                         directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                     },
                 },
-            })
-            vim.lsp.enable 'gopls'
+            });
+            vim.lsp.enable('gopls');
 
-            vim.lsp.config('emmet_ls', {})
-            vim.lsp.enable 'emmet_ls'
+            vim.lsp.config('emmet_ls', {});
+            vim.lsp.enable('emmet_ls');
 
             vim.lsp.config('vale_ls', {
                 cmd = { 'vale-ls' },
                 filetypes = { 'markdown', 'text', 'tex', 'rst' },
-                root_dir = require('lspconfig.util').root_pattern '.vale.ini',
+                root_dir = require('lspconfig.util').root_pattern('.vale.ini'),
                 single_file_support = true,
-            })
-            vim.lsp.enable 'vale_ls'
+            });
+            vim.lsp.enable('vale_ls');
 
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
-                -- cmd = {...},
-                -- filetypes = { ...},
+                cmd = nvim_data .. '/mason/bin/lua-language-server.cmd',
                 -- capabilities = {},
                 settings = {
                     Lua = {
@@ -182,37 +178,62 @@ return {
                         -- diagnostics = { disable = { 'missing-fields' } },
                     },
                 },
-            })
+            });
+            vim.lsp.enable('lua_ls')
 
             vim.lsp.config('jsonls', {
+                cmd = { nvim_data .. '/mason/bin/vscode-json-language-server.cmd', "--stdio" },
                 settings = {
-                    schemas = {
-                        {
-                            fileMatch = { 'deno.json', 'deno.jsonc' },
-                            url = 'https://github.com/denoland/deno/blob/main/cli/schemas/config-file.v1.json',
+                    json = {
+                        validate = { enable = true },
+                        schemas = {
+                            {
+                                fileMatch = { 'deno.json', 'deno.jsonc' },
+                                url =
+                                'https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json',
+                            },
                         },
                     },
                 },
-            })
-            vim.lsp.enable 'jsonls'
+            });
+            vim.lsp.enable('jsonls');
 
             vim.lsp.config('eslint', {
                 filetypes = { 'javascript' },
-            })
-            vim.lsp.enable 'eslint'
+            });
+            vim.lsp.enable('eslint');
 
-            vim.lsp.config('html', {})
-            vim.lsp.enable 'html'
+            vim.lsp.config('html', {});
+            vim.lsp.enable('html');
 
-            vim.lsp.config('denols', {
-                root_dir = require('lspconfig').util.root_pattern { 'deno.json', 'deno.jsonc' },
-                settings = {},
-                init_options = {
-                    -- lint = true,
-                    unstable = true,
-                },
-            })
-            vim.lsp.enable 'denols'
+            -- vim.lsp.config('denols', {
+            --     cmd = { nvim_data .. '/mason/bin/deno.cmd', 'lsp' },
+            -- root_dir = require('lspconfig').util.root_pattern({ 'deno.json', 'deno.jsonc' }),
+            --     single_file_support = true,
+            --     init_options = {
+            --         enable = true,
+            --         lint = true,
+            --         single_file_support = true,
+            --         unstable = true,
+            --     },
+            -- });
+            do
+                ---@type vim.lsp.Config
+                local opts = {
+                    cmd = { nvim_data .. '/mason/bin/deno.cmd', 'lsp' },
+                    root_markers = { 'deno.json', 'deno.jsonc', '.git' },
+                    filetypes = {
+                        'javascript',
+                        'javascriptreact',
+                        'javascript.jsx',
+                        'typescript',
+                        'typescriptreact',
+                        'typescript.tsx',
+                    },
+                }
+                vim.lsp.config('denols', opts)
+                vim.lsp.enable('denols')
+            end
 
             vim.lsp.config('fsautocomplete', {
                 cmd = { 'fsautocomplete', '--adaptive-lsp-server-enabled' },
@@ -236,7 +257,7 @@ return {
                         keywordsAutocomplete = true,
                     },
                 },
-            })
+            });
 
             -- require('mason').setup()
 
@@ -335,7 +356,7 @@ return {
             {
                 '<leader>f',
                 function()
-                    require('conform').format { async = true, lsp_fallback = true }
+                    require('conform').format({ async = true, lsp_fallback = true });
                 end,
                 mode = '',
                 desc = '[F]ormat buffer',
@@ -348,14 +369,14 @@ return {
                 -- Disable "format_on_save lsp_fallback" for languages that don't
                 -- have a well standardized coding style. You can add additional
                 -- languages here or re-enable it for the disabled ones.
-                local disable_filetypes = { c = true, cpp = true, templ = true }
+                local disable_filetypes = { c = true, cpp = true, templ = true };
                 return {
                     timeout_ms = 500,
                     lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-                }
+                };
             end,
             formatters_by_ft = {
-                lua = { 'stylua' },
+                lua = { nvim_data .. '/mason/bin/stylua.cmd' },
                 -- sql = { 'sleek' }, -- works
                 sql = { 'sqlfluff' },
                 -- Conform can also run multiple formatters sequentially
@@ -387,10 +408,10 @@ return {
                     -- Build Step is needed for regex support in snippets.
                     -- This step is not supported in many windows environments.
                     -- Remove the below condition to re-enable on windows.
-                    if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-                        return
-                    end
-                    return 'make install_jsregexp'
+                    if vim.fn.has('win32') == 1 or vim.fn.executable('make') == 0 then
+                        return;
+                    end;
+                    return 'make install_jsregexp';
                 end)(),
                 dependencies = {
                     -- `friendly-snippets` contains a variety of premade snippets.
@@ -414,14 +435,14 @@ return {
         },
         config = function()
             -- See `:help cmp`
-            local cmp = require 'cmp'
-            local luasnip = require 'luasnip'
-            luasnip.config.setup {}
+            local cmp = require('cmp');
+            local luasnip = require('luasnip');
+            luasnip.config.setup({});
 
-            cmp.setup {
+            cmp.setup({
                 snippet = {
                     expand = function(args)
-                        luasnip.lsp_expand(args.body)
+                        luasnip.lsp_expand(args.body);
                     end,
                 },
                 completion = { completeopt = 'menu,menuone,noinsert' },
@@ -434,7 +455,7 @@ return {
                 -- chosen, you will need to read `:help ins-completion`
                 --
                 -- No, but seriously. Please read `:help ins-completion`, it is really good!
-                mapping = cmp.mapping.preset.insert {
+                mapping = cmp.mapping.preset.insert({
                     -- Select the [n]ext item
                     ['<C-n>'] = cmp.mapping.select_next_item(),
 
@@ -448,20 +469,20 @@ return {
                     -- Accept ([y]es) the completion.
                     --  This will auto-import if your LSP supports it.
                     --  This will expand snippets if the LSP sent a snippet.
-                    ['<C-y>'] = cmp.mapping.confirm { select = true },
+                    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
 
                     ['<C-g>'] = function()
                         if cmp.visible_docs() then
-                            cmp.close_docs()
+                            cmp.close_docs();
                         else
-                            cmp.open_docs()
-                        end
+                            cmp.open_docs();
+                        end;
                     end,
 
                     -- Manually trigger a completion from nvim-cmp.
                     --  Generally you don't need this, because nvim-cmp will display
                     --  completions whenever it has completion options available.
-                    ['<C-Space>'] = cmp.mapping.complete {},
+                    ['<C-Space>'] = cmp.mapping.complete({}),
 
                     -- Think of <c-l> as moving to the right of your snippet expansion.
                     --  So if you have a snippet that's like:
@@ -473,18 +494,18 @@ return {
                     -- <c-h> is similar, except moving you backwards.
                     ['<C-l>'] = cmp.mapping(function()
                         if luasnip.expand_or_locally_jumpable() then
-                            luasnip.expand_or_jump()
-                        end
+                            luasnip.expand_or_jump();
+                        end;
                     end, { 'i', 's' }),
                     ['<C-h>'] = cmp.mapping(function()
                         if luasnip.locally_jumpable(-1) then
-                            luasnip.jump(-1)
-                        end
+                            luasnip.jump(-1);
+                        end;
                     end, { 'i', 's' }),
 
                     -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
                     --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-                },
+                }),
                 sources = {
                     {
                         name = 'lazydev',
@@ -496,7 +517,7 @@ return {
                     { name = 'path' },
                     { name = 'jupynium' },
                 },
-            }
+            });
         end,
     },
-}
+};
