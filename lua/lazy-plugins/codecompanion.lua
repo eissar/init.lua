@@ -106,7 +106,7 @@ local opts = {
                     body = {
                         -- https://openrouter.ai/docs/features/provider-routing#ordering-specific-providers
                         provider = {
-                            order = { 'chutes', 'vertex', 'fireworks' },
+                            order = { 'chutes', 'vertex', 'fireworks', 'deepseek' },
                             -- allow_fallbacks = false,
                         },
                         temperature = 0.1,
