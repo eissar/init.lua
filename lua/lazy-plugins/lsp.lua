@@ -159,7 +159,7 @@ return {
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
-                cmd = nvim_data .. '/mason/bin/lua-language-server.cmd',
+                cmd = { nvim_data .. '/mason/bin/lua-language-server.cmd' },
                 -- capabilities = {},
                 settings = {
                     Lua = {
@@ -220,6 +220,13 @@ return {
             do
                 ---@type vim.lsp.Config
                 local opts = {
+                    settings = {
+                        deno = {
+                            enable = true,
+                            completeFunctionCalls = true,
+                            indentWidth = 4
+                        }
+                    },
                     cmd = { nvim_data .. '/mason/bin/deno.cmd', 'lsp' },
                     root_markers = { 'deno.json', 'deno.jsonc', '.git' },
                     filetypes = {
