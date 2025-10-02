@@ -240,9 +240,9 @@ local opts = {
 -- - Repetitive code patterns that could be more efficiently handled through abstraction or optimization.
 -- ]]
 return {
-    -- https://codecompanion.olimorris.dev/usage/chat-buffer/
     'olimorris/codecompanion.nvim',
-    lazy = false,
+    -- https://codecompanion.olimorris.dev/usage/chat-buffer/
+    event = 'VeryLazy',
     config = function()
         require('codecompanion').setup(opts)
     end,
