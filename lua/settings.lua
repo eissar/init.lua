@@ -2,6 +2,9 @@
   This is how you do a multiline string
 --]]
 
+-- enable :cfilter & :lfilter
+vim.cmd 'packadd cfilter'
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 
