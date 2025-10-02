@@ -214,6 +214,11 @@ local opts = {
     display = {
         diff = {
             provider = 'mini_diff',
+            provider_opts = {
+                inline = {
+                    layout = 'inline',
+                },
+            },
         },
         action_palette = {
             show_default_prompt_library = false, -- Show the default prompt library in the action palette?
