@@ -40,7 +40,8 @@ vim.keymap.set('i', '<C-f>', '<C-x><C-f>', { desc = '[F]ilename completion' })
 
 --[[ misc user function keybindings ]]
 vim.api.nvim_set_keymap('n', 'gX', ':lua getNodeAsUrl()<cr>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>', { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
+vim.api.nvim_set_keymap('n', '<leader>prf', ':lua PrintFile()<cr>',
+    { noremap = true, silent = true, desc = 'Print markdown file and open in webbrowser.' })
 vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ifn', ':lua insertFilename()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>it', ':lua InsertAbbreviatedTime()<cr>', { noremap = true, silent = true })
@@ -225,7 +226,7 @@ do -- Telescope bindings; see `:help telescope.builtin`
 end
 
 do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanion.nvim%20keymap&type=code>
-    cc = require 'codecompanion'
+    local cc = require 'codecompanion'
     vim.keymap.set('n', '<A-c>', '<cmd>CodeCompanionChat Toggle<cr>', { desc = 'CodeCompanion' })
     vim.keymap.set('n', '<C-a>', '<cmd>CodeCompanionActions<cr>')
     vim.keymap.set('v', '<C-a>', '<cmd>CodeCompanionActions<cr>')
@@ -234,6 +235,8 @@ do -- CodeCompanion <https://github.com/search?q=repo%3Aolimorris%2Fcodecompanio
     -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>")
     vim.cmd [[cab cc CodeCompanion]]
 end
+
+
 
 --- @type vim.api.keyset.create_autocmd
 M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
@@ -334,7 +337,7 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
                             local items = {}
                             for _, item in ipairs(value) do
                                 if type(item) == 'table' then
-                                    table.insert(items, '{...}') -- Avoid deep nesting in single-line format
+                                    table.insert(items, '{...}')                     -- Avoid deep nesting in single-line format
                                 elseif type(item) == 'string' then
                                     table.insert(items, string.format('"%s"', item)) -- Add quotes for clarity
                                 else
@@ -344,7 +347,8 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
                             if #items == 0 then
                                 table.insert(output_lines, string.format('%s%s = {}', indent, key))
                             else
-                                table.insert(output_lines, string.format('%s%s = { %s }', indent, key, table.concat(items, ', ')))
+                                table.insert(output_lines,
+                                    string.format('%s%s = { %s }', indent, key, table.concat(items, ', ')))
                             end
                         else
                             -- It's an object/map-like table. Recurse into it.
@@ -373,8 +377,8 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
                 -- Set buffer options for a clean, read-only experience.
                 vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe') -- Close buffer when window is closed
                 vim.api.nvim_buf_set_option(buf, 'buftype', 'nofile') -- Not a file-backed buffer
-                vim.api.nvim_buf_set_option(buf, 'swapfile', false) -- No swap file
-                vim.api.nvim_buf_set_option(buf, 'filetype', 'lua') -- Set filetype for syntax highlighting
+                vim.api.nvim_buf_set_option(buf, 'swapfile', false)   -- No swap file
+                vim.api.nvim_buf_set_option(buf, 'filetype', 'lua')   -- Set filetype for syntax highlighting
 
                 -- Write the collected lines to the new buffer.
                 vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -444,7 +448,7 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
             local params = {
                 items = {
                     { section = 'powershell.workspace' }, -- Example for lua-language-server
-                    { section = 'powershell.settings' }, -- Example for lua-language-server
+                    { section = 'powershell.settings' },  -- Example for lua-language-server
                     -- { section = "pyright.analysis" }, -- Example for pyright
                     -- Add any other sections you want to inspect
                 },
