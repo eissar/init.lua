@@ -225,4 +225,14 @@ local function show_diff_since_last_saved()
     end;
 end;
 
+vim.api.nvim_create_user_command('OpenOnGithub', function()
+    local current_file = vim.fn.expand('%:p');
+    local git_root = vim.fs.dirname(vim.fs.find('.git', { path = vim.fs.dirname(current_file), upward = true })[1]);
+    if git_root then
+        vim.cmd('silent !cd "' .. git_root .. '" && gh browse %');
+    else
+        vim.notify('Not in a git repository', vim.log.levels.ERROR);
+    end;
+end, {});
+
 vim.api.nvim_create_user_command('DiffSinceSaved', show_diff_since_last_saved, {});
