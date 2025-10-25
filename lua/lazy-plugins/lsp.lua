@@ -156,6 +156,21 @@ return {
             })
             vim.lsp.enable('vale_ls')
 
+            vim.lsp.config('marksman', {
+                cmd = { nvim_data .. '/mason/bin/marksman.cmd', 'server' },
+                filetypes = { 'markdown', 'markdown.mdx' },
+                -- settings = {
+                -- root_dir = require('lspconfig.util').root_pattern('.marksman.toml'),
+                -- },
+                -- root_dir = function(fname)
+                --     local root_files = { '.marksman.toml' }
+                --     return require('lspconfig.util').root_pattern(unpack(root_files))(fname)
+                --         or vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+                -- end,
+                -- single_file_support = true,
+
+            })
+            vim.lsp.enable('marksman')
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
