@@ -43,15 +43,13 @@ vim.opt.showmode = false
 vim.opt.grepprg = 'rg --vimgrep --no-heading --smart-case'
 vim.opt.grepformat = '%f:%l:%c:%m'
 
--- Use pwsh as terminal/ shell --
-vim.opt.shell = 'pwsh.exe'
-vim.opt.shellcmdflag = [[-OutputFormat Text -NoLogo -c "$PSStyle.OutputRendering = 'PlainText';"]]
-
--- -- does not work:
--- vim.opt.shellcmdflag = [[-OutputFormat Text -NoLogo -c "$PSStyle.OutputRendering = 'PlainText';" -c]]
-
-vim.opt.shellquote = ''
-vim.opt.shellxquote = ''
+-- Use pwsh as terminal/ shell
+if vim.fn.has('win32') == 1 then
+  vim.opt.shell = 'pwsh.exe'
+  vim.opt.shellcmdflag = [[-OutputFormat Text -NoLogo -c "$PSStyle.OutputRendering = 'PlainText';"]]
+  vim.opt.shellquote = ''
+  vim.opt.shellxquote = ''
+end
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
