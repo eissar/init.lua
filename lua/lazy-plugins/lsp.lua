@@ -242,7 +242,7 @@ return {
                             indentWidth = 4
                         }
                     },
-                    cmd = { nvim_data .. '/mason/bin/deno.cmd', 'lsp' },
+                    cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/deno.cmd', 'lsp' } or { nvim_data .. '/mason/bin/deno', 'lsp' },
                     root_markers = { 'deno.json', 'deno.jsonc', '.git' },
                     filetypes = {
                         'javascript',
