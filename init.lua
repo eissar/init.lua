@@ -3,6 +3,9 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- for old builds
+vim.uv = vim.uv or vim.loop
+
 --[[ temp fix for SHADA Issue:
   <https://github.com/neovim/neovim/issues/8587>
   ```powershell
@@ -141,7 +144,7 @@ require('lazy').setup({
             { 'nvim-telescope/telescope-ui-select.nvim' },
 
             -- Useful for getting pretty icons, but requires a Nerd Font.
-            { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+            { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
         },
         config = function()
             -- The easiest way to use Telescope, is to start by doing something like:
@@ -225,9 +228,9 @@ require('lazy').setup({
             parser_config.sql = {
                 install_info = {
                     url = 'https://github.com/DerekStride/tree-sitter-sql', -- local path or git repo
-                    files = { 'src/parser.c', 'src/scanner.c' }, -- note that some parsers also require src/scanner.c or src/scanner.cc
+                    files = { 'src/parser.c', 'src/scanner.c' },            -- note that some parsers also require src/scanner.c or src/scanner.cc
                     -- optional entries:
-                    branch = 'gh-pages', -- default branch in case of git repo if different from master
+                    branch = 'gh-pages',                                    -- default branch in case of git repo if different from master
 
                     -- generate_requires_npm = false,
                     -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
@@ -315,7 +318,7 @@ require('lazy').setup({
     },
     -- interactive repl for configured languages
     { 'Vigemus/iron.nvim' },
-    { -- automatically add plugins, configuration, etc from `lua/lazy-plugins/*.lua`
+    {                            -- automatically add plugins, configuration, etc from `lua/lazy-plugins/*.lua`
         import = 'lazy-plugins', -- './lua/lazy-plugins/'
     },
 
@@ -355,9 +358,9 @@ require('lazy').setup({
 -- just throwing this in here  TODO: move
 vim.api.nvim_create_user_command('PopupWindow', PopupWindow, {})
 
-require 'remap' -- './lua/remap.lua'
-require 'settings' -- './lua/settings.lua'
-require 'autocmd' -- './lua/autocmd.lua'
-require 'usercmd' -- './lua/usercmd.lua'
+require 'remap'            -- './lua/remap.lua'
+require 'settings'         -- './lua/settings.lua'
+require 'autocmd'          -- './lua/autocmd.lua'
+require 'usercmd'          -- './lua/usercmd.lua'
 require 'plugins.snippets' -- './lua/plugins/snippets.lua'
 -- require 'plugins.iron-nvim' --
