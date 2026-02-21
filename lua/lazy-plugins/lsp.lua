@@ -8,7 +8,9 @@ return {
         opts = {
             library = {
                 -- Load luvit types when the `vim.uv` word is found
-                { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+                { path = '/usr/local/share/lua/5.1', words = { 'htmlparser' } },
+                { path = 'luvit-meta/library',       words = { 'vim%.uv' } },
+
             },
         },
     },
@@ -112,38 +114,44 @@ return {
             require('mason').setup()
             -- do NOT call mason setup handlers.
 
-            vim.lsp.config('gopls', {
-                capabilities = capabilities,
-                filetypes = { 'go', 'gomod' },
-                cmd = { nvim_data .. '/mason/bin/gopls.cmd' },
-                settings = {
-                    gopls = {
-                        -- buildFlags = { '' },
-                        gofumpt = true,
-                        analyses = {
-                            nilness = true,
-                            unusedparams = true,
-                            unusedwrite = true,
-                            useany = true,
+            do
+                local cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/gopls.cmd' } or
+                    { os.getenv('HOME') .. '/go/bin/gopls' }
+                -- { nvim_data .. '/mason/bin/gopls' } or
+
+                vim.lsp.config('gopls', {
+                    capabilities = capabilities,
+                    filetypes = { 'go', 'gomod' },
+                    cmd = cmd,
+                    settings = {
+                        gopls = {
+                            -- buildFlags = { '' },
+                            gofumpt = true,
+                            analyses = {
+                                nilness = true,
+                                unusedparams = true,
+                                unusedwrite = true,
+                                useany = true,
+                            },
+                            hints = {
+                                assignVariableTypes = true,
+                                compositeLiteralFields = true,
+                                compositeLiteralTypes = true,
+                                constantValues = true,
+                                functionTypeParameters = true,
+                                parameterNames = true,
+                                rangeVariableTypes = true,
+                            },
+                            experimentalPostfixCompletions = true,
+                            staticcheck = true,
+                            linksInHover = 'gopls',
+                            usePlaceholders = true,
+                            directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                         },
-                        hints = {
-                            assignVariableTypes = true,
-                            compositeLiteralFields = true,
-                            compositeLiteralTypes = true,
-                            constantValues = true,
-                            functionTypeParameters = true,
-                            parameterNames = true,
-                            rangeVariableTypes = true,
-                        },
-                        experimentalPostfixCompletions = true,
-                        staticcheck = true,
-                        linksInHover = 'gopls',
-                        usePlaceholders = true,
-                        directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                     },
-                },
-            })
-            vim.lsp.enable('gopls')
+                })
+                vim.lsp.enable('gopls')
+            end
 
             vim.lsp.config('emmet_ls', {})
             vim.lsp.enable('emmet_ls')
@@ -174,7 +182,8 @@ return {
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
-                cmd = { nvim_data .. '/mason/bin/lua-language-server.cmd' },
+                cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/lua-language-server.cmd' } or
+                    { nvim_data .. '/mason/bin/lua-language-server' },
                 -- capabilities = {},
                 settings = {
                     Lua = {
@@ -242,7 +251,8 @@ return {
                             indentWidth = 4
                         }
                     },
-                    cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/deno.cmd', 'lsp' } or { nvim_data .. '/mason/bin/deno', 'lsp' },
+                    cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/deno.cmd', 'lsp' } or
+                        { nvim_data .. '/mason/bin/deno', 'lsp' },
                     root_markers = { 'deno.json', 'deno.jsonc', '.git' },
                     filetypes = {
                         'javascript',
