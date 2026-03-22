@@ -1,10 +1,21 @@
--- Set <space> as the leader key (See `:help mapleader`)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+-- Set <space> as the leader key (See `:help mapleader`)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+
 -- for old builds
 vim.uv = vim.uv or vim.loop
+
+
+vim.g.netrw_ftp_cmd = 'tnftp'
+vim.g.netrw_use_lf = 1
+
+vim.g.netrw_ftp_pasv = 1
+-- vim.g.netrw_ftp_epsv = 0
+vim.g.netrw_ftpextracmd = 'epsv4 off'
+
+
 
 --[[ temp fix for SHADA Issue:
   <https://github.com/neovim/neovim/issues/8587>
