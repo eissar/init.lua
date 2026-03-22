@@ -22,6 +22,12 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
     command = 'set filetype=html',
     group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
 })
+-- set hujson ft = json
+vim.api.nvim_create_autocmd('BufWinEnter', {
+    pattern = '*.hujson',
+    command = 'set filetype=jsonc',
+    group = vim.api.nvim_create_augroup('BufFiletypes', { clear = true }),
+})
 
 -- set filetype for sql files
 -- vim.api.nvim_create_autocmd('BufWinEnter', {
