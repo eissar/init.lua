@@ -94,7 +94,7 @@ local opts = {
                     schema = {
                         model = {
                             -- order = 1,
-                            default = 'deepseek/deepseek-chat-v3.1',
+                            default = 'deepseek/deepseek-v3.1-terminus',
                             -- default = 'z-ai/glm-4.5',
                             -- choices = {
                             --     'openai/gpt-oss-120b',
