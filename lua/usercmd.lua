@@ -255,3 +255,5 @@ vim.api.nvim_create_user_command('ScreenshotMode', function()
 end, {
     desc = 'Toggle screenshot mode (no numbers, no whitespace)'
 })
+
+vim.api.nvim_create_user_command('Gbrowse', 'GBrowse', {})

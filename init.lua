@@ -73,7 +73,10 @@ require('lazy').setup({
         'L3MON4D3/LuaSnip',
     },
     {
-        'tpope/vim-fugitive',
+            'tpope/vim-fugitive',
+            dependencies = {
+                'tpope/vim-rhubarb',
+            },
     },
     {
         'kiyoon/jupynium.nvim',
