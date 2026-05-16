@@ -84,35 +84,13 @@ local opts = {
                     env = {
                         url = 'https://openrouter.ai/api',
                         chat_url = '/v1/chat/completions',
-
-                        -- name = 'gpt_oss_120b_cerebras',
                         formatted_name = 'openrouter.ai',
                         api_key = os.getenv 'OPENROUTER_KEY',
-
-                        -- model = 'openai/gpt-oss-120b:free',
                     },
                     schema = {
                         model = {
-                            -- order = 1,
-                            default = 'deepseek/deepseek-chat-v3.1',
-                            -- default = 'z-ai/glm-4.5',
-                            -- choices = {
-                            --     'openai/gpt-oss-120b',
-                            --     'z-ai/glm-4.5',
-                            --     -- 'moonshotai/kimi-k2',
-                            --     'anthropic/claude-sonnet-4',
-                            -- },
+                            default = 'deepseek/deepseek-v4-flash',
                         },
-                    },
-                    body = {
-                        -- https://openrouter.ai/docs/features/provider-routing#ordering-specific-providers
-                        provider = {
-                            order = { 'chutes', 'vertex', 'fireworks', 'deepseek' },
-                            -- allow_fallbacks = false,
-                        },
-                        temperature = 0.1,
-                        verbosity = 'low',
-                        -- quantizations = 'fp8',
                     },
                 });
             end,
