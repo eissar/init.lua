@@ -8,9 +8,7 @@ return {
         opts = {
             library = {
                 -- Load luvit types when the `vim.uv` word is found
-                { path = '/usr/local/share/lua/5.1', words = { 'htmlparser' } },
-                { path = 'luvit-meta/library',       words = { 'vim%.uv' } },
-
+                { path = 'luvit-meta/library', words = { 'vim%.uv' } },
             },
         },
     },
@@ -114,44 +112,38 @@ return {
             require('mason').setup()
             -- do NOT call mason setup handlers.
 
-            do
-                local cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/gopls.cmd' } or
-                    { os.getenv('HOME') .. '/go/bin/gopls' }
-                -- { nvim_data .. '/mason/bin/gopls' } or
-
-                vim.lsp.config('gopls', {
-                    capabilities = capabilities,
-                    filetypes = { 'go', 'gomod' },
-                    cmd = cmd,
-                    settings = {
-                        gopls = {
-                            -- buildFlags = { '' },
-                            gofumpt = true,
-                            analyses = {
-                                nilness = true,
-                                unusedparams = true,
-                                unusedwrite = true,
-                                useany = true,
-                            },
-                            hints = {
-                                assignVariableTypes = true,
-                                compositeLiteralFields = true,
-                                compositeLiteralTypes = true,
-                                constantValues = true,
-                                functionTypeParameters = true,
-                                parameterNames = true,
-                                rangeVariableTypes = true,
-                            },
-                            experimentalPostfixCompletions = true,
-                            staticcheck = true,
-                            linksInHover = 'gopls',
-                            usePlaceholders = true,
-                            directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
+            vim.lsp.config('gopls', {
+                capabilities = capabilities,
+                filetypes = { 'go', 'gomod' },
+                cmd = { nvim_data .. '/mason/bin/gopls.cmd' },
+                settings = {
+                    gopls = {
+                        -- buildFlags = { '' },
+                        gofumpt = true,
+                        analyses = {
+                            nilness = true,
+                            unusedparams = true,
+                            unusedwrite = true,
+                            useany = true,
                         },
+                        hints = {
+                            assignVariableTypes = true,
+                            compositeLiteralFields = true,
+                            compositeLiteralTypes = true,
+                            constantValues = true,
+                            functionTypeParameters = true,
+                            parameterNames = true,
+                            rangeVariableTypes = true,
+                        },
+                        experimentalPostfixCompletions = true,
+                        staticcheck = true,
+                        linksInHover = 'gopls',
+                        usePlaceholders = true,
+                        directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
                     },
-                })
-                vim.lsp.enable('gopls')
-            end
+                },
+            })
+            vim.lsp.enable('gopls')
 
             vim.lsp.config('emmet_ls', {})
             vim.lsp.enable('emmet_ls')
@@ -178,12 +170,12 @@ return {
                 -- single_file_support = true,
 
             })
+            require('lspconfig')
             vim.lsp.enable('marksman')
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
-                cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/lua-language-server.cmd' } or
-                    { nvim_data .. '/mason/bin/lua-language-server' },
+                cmd = { nvim_data .. '/mason/bin/lua-language-server.cmd' },
                 -- capabilities = {},
                 settings = {
                     Lua = {
@@ -203,6 +195,10 @@ return {
                     },
                 },
             })
+
+
+
+
             vim.lsp.enable('lua_ls')
 
             vim.lsp.config('jsonls', {
@@ -210,11 +206,24 @@ return {
                 settings = {
                     json = {
                         validate = { enable = true },
+                        keepLines = { enable = true },
                         schemas = {
                             {
                                 fileMatch = { 'deno.json', 'deno.jsonc' },
                                 url =
                                 'https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json',
+                            },
+                            {
+                                fileMatch = { '*.hujson' },
+                                schema = {
+                                    -- url = 'C:/Users/eshaa/.config/nvim/tailscale-acl.json-schema.json',
+                                    allowTrailingCommas = true,
+                                    keepLines = { enable = true },
+                                },
+                            },
+                            {
+                                fileMatch = { 'openapi.json', 'openapi.yaml', 'openapi.yml' },
+                                url = 'https://spec.openapis.org/oas/3.0/schema/2024-10-18',
                             },
                         },
                     },
@@ -248,7 +257,6 @@ return {
                         deno = {
                             enable = true,
                             completeFunctionCalls = true,
-                            indentWidth = 4
                         }
                     },
                     cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/deno.cmd', 'lsp' } or
@@ -290,93 +298,6 @@ return {
                     },
                 },
             })
-
-            -- require('mason').setup()
-
-            -- You can add other tools here that you want Mason to install
-            -- for you, so that they are available from within Neovim.
-            -- local ensure_installed = vim.tbl_keys(servers or {})
-            -- vim.list_extend(ensure_installed, {
-            --     'stylua', -- formatter for lua
-            --     -- 'sleek', --formatter for sql
-            --     'sqlfluff', --linter for sql
-            --     'prettierd', -- js formatter
-            -- })
-            -- ---@diagnostic disable-next-line: missing-fields
-            --
-            -- require('mason-lspconfig').setup {
-            --     automatic_installation = false,
-            --     handlers = {
-            --         function(server_name)
-            --             print(server_name)
-            --             if server_name == 'gopls' then
-            --                 return
-            --             end
-            --
-            --             local server = servers[server_name] or {}
-            --
-            --             print 'AHH'
-            --             vim.notify 'AHH'
-            --
-            --             -- This handles overriding only values explicitly passed
-            --             -- by the server configuration above. Useful when disabling
-            --             -- certain features of an LSP (for example, turning off formatting for tsserver)
-            --             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            --             require('lspconfig')[server_name].setup(server)
-            --         end,
-            --     },
-            --
-            --     -- "Special" configs which cant' be defined in the array since bundle_path
-            --     -- does not point to an executable file.
-            --     require('lspconfig').powershell_es.setup {
-            --         bundle_path = vim.fn.stdpath 'data' .. '/mason/packages/powershell-editor-services', -- ~\Dropbox\Application_Files\lsp\PowerShellEditorServices
-            --         root_dir = require('lspconfig.util').find_git_ancestor or vim.loop.cwd,
-            --         settings = {
-            --             -- <https://github.com/PowerShell/PSScriptAnalyzer/blob/a744b6cfb6815d8f8fcc1901e617081580751155/Engine/Settings.cs#L40>
-            --             powershell = {
-            --                 scriptAnalysis = {
-            --                     -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L61>
-            --                     enable = true,
-            --                     -- <https://github.com/PowerShell/PowerShellEditorServices/blob/e26f172efa6ee6aef1de0f64b7f2d0fbbc5d22cd/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs#L62>
-            --                     -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1"]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-            --                     settingsPath = vim.fn.expand '~' .. '/.dotfiles/PSScriptAnalyzerSettings.psd1',
-            --                 },
-            --                 codeFormatting = {
-            --                     enable = true,
-            --                     -- You can get more code formatting settings here:
-            --                     -- https://github.com/PowerShell/PowerShellEditorServices/blob/41fce39f491d5d351b4ac5864e89857ec070e107/src/PowerShellEditorServices/Services/Workspace/LanguageServerSettings.cs
-            --                     Preset = 'OTBS',
-            --                     useCorrectCasing = true,
-            --                 },
-            --
-            --                 -- settingsPath = os.getenv 'CLOUD_DIR' .. [[/Documents/Powershell/PSScriptAnalyzerSettings.psd1]], -- '~\Dropbox\Documents\Powershell\PSScriptAnalyzerSettings.psd1'
-            --                 -- },
-            --
-            --                 -- pwsh.exe -NoLogo -NoProfile -Command & 'C:\Users\eshaa\AppData\Local\nvim-data/mason/packages/powershell-editor-services/PowerShellEditorServices/Start-EditorServices.ps1'
-            --                 --command = 'pwsh',
-            --                 --args = { '-NoProfile', '-Command', '[Console]::In.ReadToEnd() | Invoke-Formatter' },
-            --                 -- command = 'pwsh',
-            --                 -- args = {
-            --                 --     '-NoProfile',
-            --                 --     '-Command',
-            --                 --     "if(!(Get-Module -ListAvailable PSScriptAnalyzer -ErrorAction SilentlyContinue)){Import-Module '~/AppData/Local/nvim-data/mason/packages/powershell-editor-services/PSScriptAnalyzer/*/PSScriptAnalyzer.psd1' -ErrorAction SilentlyContinue}; [Console]::In.ReadToEnd() | Invoke-Formatter -Settings @{Rules = @{PSUseConsistentIndentation=@{IndentationSize=4;Kind='space'};PSPlaceOpenBrace=@{Enable=$true;OnSameLine=$true;}}}",
-            --                 -- },
-            --             },
-            --         },
-            --     },
-            --
-            --     require('lspconfig').ast_grep.setup {
-            --         -- these are the default options, you only need to specify
-            --         -- options you'd like to change from the default
-            --         cmd = { 'ast-grep', 'lsp' },
-            --         -- i'll just manually manage this. could do deep extend but w/e
-            --         filetypes = { -- https://ast-grep.github.io/reference/languages.html
-            --             'md',
-            --             'markdown',
-            --         },
-            --         root_dir = require('lspconfig.util').root_pattern('sgconfig.yaml', 'sgconfig.yml'),
-            --     },
-            -- }
         end,
     },
 
