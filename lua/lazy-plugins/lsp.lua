@@ -156,6 +156,9 @@ return {
             })
             vim.lsp.enable('vale_ls')
 
+            -- vim.lsp.config('pyright', {})
+            vim.lsp.enable('pyright')
+
             vim.lsp.config('marksman', {
                 cmd = { nvim_data .. '/mason/bin/marksman.cmd', 'server' },
                 filetypes = { 'markdown', 'markdown.mdx' },
@@ -175,7 +178,10 @@ return {
             -- vim.lsp.config('marksman', require('lspconfig.configs').)
             -- vim.lsp.enable 'marksman'
             vim.lsp.config('lua_ls', {
-                cmd = { nvim_data .. '/mason/bin/lua-language-server.cmd' },
+
+                cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/lua-language-server.cmd' } or
+                { nvim_data .. '/mason/bin/lua-language-server' },
+
                 -- capabilities = {},
                 settings = {
                     Lua = {
@@ -202,7 +208,9 @@ return {
             vim.lsp.enable('lua_ls')
 
             vim.lsp.config('jsonls', {
-                cmd = { nvim_data .. '/mason/bin/vscode-json-language-server.cmd', '--stdio' },
+                cmd = vim.fn.has('win32') == 1 and { nvim_data .. '/mason/bin/vscode-json-language-server.cmd', 'lsp' } or
+                { nvim_data .. '/mason/bin/vscode-json-language-server', '--stdio' },
+
                 settings = {
                     json = {
                         validate = { enable = true },
