@@ -483,6 +483,8 @@ M.LspAttachAutoCmd = { -- ./lazy-plugins/lsp.lua
         end, { desc = '[W]orkspace [C]onfiguration' })
     end,
 }
+
+vim.keymap.set('n', '<leader>B', function() require('gitsigns').blame_line() end, { desc = 'Git blame line' })
 -- # KEYMAPS SET IN OTHER FILES:
 -- <leader>
 --
