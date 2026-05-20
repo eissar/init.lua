@@ -257,3 +257,32 @@ end, {
 })
 
 vim.api.nvim_create_user_command('Gbrowse', 'GBrowse', {})
+
+
+vim.api.nvim_create_user_command('Tgrep', function(opts)
+    -- Use the table form of vim.cmd which calls nvim_cmd() directly.
+    -- Unlike the string form the table passes args directly
+    -- without shell parsing
+    --
+    --  in combination with
+    --  vim.opt.grepprg = 'rg --vimgrep --smart-case'
+    --
+    -- lets you call rg without quotes, for example:
+    --
+    -- :Tgrep -F html(
+    -- replacing:
+    -- :grep -F 'html(' | copen
+    --
+    vim.cmd({
+        cmd  = 'grep',
+        args = opts.fargs,
+        bang = true,
+        mods = { silent = true },
+    })
+
+    require('telescope.builtin').quickfix()
+end, {
+    nargs    = '+',
+    desc     = 'Run :grep and show results in Telescope',
+    complete = 'file',
+})
