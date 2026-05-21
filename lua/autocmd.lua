@@ -46,6 +46,17 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     end,
 })
 
+-- don't auto fold preview buffers
+vim.api.nvim_create_autocmd({ 'BufWinEnter', 'WinEnter' }, {
+    group = vim.api.nvim_create_augroup('PreviewFolds', { clear = true }),
+    callback = function()
+        if vim.wo.previewwindow then
+            vim.wo.foldlevel = 999
+        end
+    end,
+})
+
+
 -- Automatically update winbar when the cwd changes
 vim.api.nvim_create_autocmd({ 'DirChanged', 'BufWinEnter', 'CmdlineLeave' }, {
     callback = function()
