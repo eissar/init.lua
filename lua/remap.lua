@@ -46,6 +46,31 @@ vim.api.nvim_set_keymap('n', '<leader>id', ':lua insertDate()<cr>', { noremap = 
 vim.api.nvim_set_keymap('n', '<leader>ifn', ':lua insertFilename()<cr>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>it', ':lua InsertAbbreviatedTime()<cr>', { noremap = true, silent = true })
 
+
+local function scroll_preview(keys)
+    local cur_win = vim.api.nvim_get_current_win()
+
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        if vim.wo[win].previewwindow then
+            vim.api.nvim_win_call(win, function()
+                vim.cmd('normal! ' .. vim.api.nvim_replace_termcodes(keys, true, false, true))
+            end)
+
+            vim.api.nvim_set_current_win(cur_win)
+            return
+        end
+    end
+
+    vim.notify('No preview window', vim.log.levels.WARN)
+end
+
+vim.keymap.set('n', '<leader>pd', function()
+    scroll_preview('<C-d>')
+end, { desc = 'Scroll preview window half-page down' })
+
+vim.keymap.set('n', '<leader>pu', function()
+    scroll_preview('<C-u>')
+end, { desc = 'Scroll preview window half-page up' })
 -- Keybinding for opening Ex file browser
 vim.keymap.set('n', '<leader>pv', ':Ex<cr>', { noremap = true, silent = true, desc = '[P]roject [V]iew' })
 -- Diagnostic keymaps
