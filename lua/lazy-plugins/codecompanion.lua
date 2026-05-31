@@ -6,13 +6,13 @@ local log_override = {
 
     proxy = nil,
     allow_insecure = false,
-};
+}
 
 -- Configure proxy settings based on proxy_enabled
 if log_override.proxy_enabled and log_override.enabled then
-    log_override.proxy = 'http://127.0.0.1:4141';
-    log_override.allow_insecure = true;
-end;
+    log_override.proxy = 'http://127.0.0.1:4141'
+    log_override.allow_insecure = true
+end
 
 local prompt_library = {
     ['Inline Document'] = {
@@ -30,7 +30,7 @@ local prompt_library = {
             {
                 role = 'user',
                 content = function(context)
-                    local code = require('codecompanion.helpers.actions').get_code(context.start_line, context.end_line);
+                    local code = require('codecompanion.helpers.actions').get_code(context.start_line, context.end_line)
                     return string.format(
                         [[Please provide documentation in comment code for the following code and suggest to have better naming to improve readability.
 
@@ -39,7 +39,7 @@ local prompt_library = {
                                 ```]],
                         context.filetype,
                         code
-                    );
+                    )
                 end,
                 opts = {
                     contains_code = true,
@@ -47,7 +47,7 @@ local prompt_library = {
             },
         },
     },
-};
+}
 
 
 -- ---@type
@@ -56,6 +56,32 @@ local opts = {
     log_prompts = true,
     log_max_size = 10, -- Set max log file size to 10 MB
     log_max_files = 5, -- Keep a maximum of 5 old log files
+
+    rules = {
+        default = {
+            description = 'Collection of common files for all projects',
+            files = {
+                '.clinerules',
+                '.cursorrules',
+                '.goosehints',
+                '.rules',
+                '.windsurfrules',
+                '.github/copilot-instructions.md',
+                'AGENT.md',
+                'AGENTS.md',
+                { path = 'CLAUDE.md',           parser = 'claude' },
+                { path = 'CLAUDE.local.md',     parser = 'claude' },
+                { path = '~/.claude/CLAUDE.md', parser = 'claude' },
+            },
+            is_preset = true,
+        },
+        opts = {
+            chat = {
+                autoload = 'default', -- The rule groups to load
+                enabled = true,
+            },
+        },
+    },
 
     adapters = {
         ---@type CodeCompanion.HTTPAdapter{}
@@ -77,7 +103,7 @@ local opts = {
                             default = 'openai/gpt-oss-120b',
                         },
                     },
-                });
+                })
             end,
             openrouter = function()
                 return require('codecompanion.adapters.http').extend('openai_compatible', {
@@ -85,14 +111,14 @@ local opts = {
                         url = 'https://openrouter.ai/api',
                         chat_url = '/v1/chat/completions',
                         formatted_name = 'openrouter.ai',
-                        api_key = os.getenv 'OPENROUTER_KEY',
+                        api_key = os.getenv 'OPENROUTER_API_KEY',
                     },
                     schema = {
                         model = {
-                            default = 'deepseek/deepseek-v4-flash',
+                            default = 'xiaomi/mimo-v2.5-pro',
                         },
                     },
-                });
+                })
             end,
             openrouter_groq = function()
                 return require('codecompanion.adapters.http').extend('openai_compatible', {
@@ -102,7 +128,7 @@ local opts = {
 
                         -- name = 'gpt_oss_120b_cerebras',
                         formatted_name = 'openrouter.ai',
-                        api_key = os.getenv 'OPENROUTER_KEY',
+                        api_key = os.getenv 'OPENROUTER_API_KEY',
 
                         -- model = 'openai/gpt-oss-120b:free',
                     },
@@ -125,7 +151,7 @@ local opts = {
                             allow_fallbacks = false,
                         },
                     },
-                });
+                })
             end,
             ollama = function()
                 ---@type CodeCompanion.HTTPAdapter
@@ -143,7 +169,7 @@ local opts = {
                         },
                         port = { default = 11434 },
                     },
-                });
+                })
             end,
 
             tavily = function()
@@ -151,7 +177,7 @@ local opts = {
                     env = {
                         api_key = os.getenv 'TAVILY_API_KEY',
                     },
-                });
+                })
             end,
 
             mistral_openrouter = function()
@@ -160,7 +186,7 @@ local opts = {
                         url = 'https://openrouter.ai/api',
                         chat_url = '/v1/chat/completions',
                         formatted_name = 'openrouter.ai',
-                        api_key = os.getenv 'OPENROUTER_KEY',
+                        api_key = os.getenv 'OPENROUTER_API_KEY',
                     },
                     schema = {
                         model = {
@@ -175,7 +201,7 @@ local opts = {
                             allow_fallbacks = false,
                         },
                     },
-                });
+                })
             end,
 
             qwen_openrouter = function()
@@ -184,7 +210,7 @@ local opts = {
                         url = 'https://openrouter.ai/api',
                         chat_url = '/v1/chat/completions',
                         formatted_name = 'openrouter.ai',
-                        api_key = os.getenv 'OPENROUTER_KEY',
+                        api_key = os.getenv 'OPENROUTER_API_KEY',
                     },
                     schema = {
                         model = {
@@ -195,7 +221,7 @@ local opts = {
                         temperature = 0.1,
                         verbosity = 'high',
                     },
-                });
+                })
             end,
             opts = {
                 show_defaults = false,
@@ -228,7 +254,7 @@ local opts = {
             -- },
         },
         inline = {
-            adapter = 'openrouter',
+            adapter = 'openrouter_groq',
         },
         suggestion = {
             auto_trigger = true,
@@ -251,7 +277,7 @@ local opts = {
         },
     },
     prompt_library = prompt_library,
-};
+}
 -- local REFACTOR = string.format [[Your task is to refactor the provided code snippet, focusing specifically on its readability and maintainability.
 -- Identify any issues related to:
 -- - Naming conventions that are unclear, misleading or doesn't follow conventions for the language being used.
@@ -267,9 +293,9 @@ return {
     -- https://codecompanion.olimorris.dev/usage/chat-buffer/
     event = 'VeryLazy',
     config = function()
-        require('codecompanion').setup(opts);
+        require('codecompanion').setup(opts)
     end,
-};
+}
 
 -- local prompt_library = {
 --     ['Support Rewrite'] = {
