@@ -73,10 +73,10 @@ require('lazy').setup({
         'L3MON4D3/LuaSnip',
     },
     {
-            'tpope/vim-fugitive',
-            dependencies = {
-                'tpope/vim-rhubarb',
-            },
+        'tpope/vim-fugitive',
+        dependencies = {
+            'tpope/vim-rhubarb',
+        },
     },
     {
         'kiyoon/jupynium.nvim',
@@ -211,68 +211,64 @@ require('lazy').setup({
     -- Highlight, edit, and navigate code
     {
         'nvim-treesitter/nvim-treesitter',
-        branch = 'master',
-        opts = {
-            compilers = { 'zig', 'gcc', 'clang' },
-            ensure_installed = { 'bash', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'jsdoc' },
-            -- Autoinstall languages that are not installed
-            -- Install parsers synchronously (only applied to `ensure_installed`)
-            sync_install = false,
+        branch = 'main',
+        -- lazy = false,
+        build = ':TSUpdate',
 
-            -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-            auto_install = true,
-            highlight = {
-                enable = true,
-                -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-                --  If you are experiencing weird indenting issues, add the language to
-                --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-                -- additional_vim_regex_highlighting = { 'ruby', 'go' },
-                additional_vim_regex_highlighting = { 'ruby' },
-            },
-            indent = { enable = true, disable = { 'ruby', 'go' } },
-            -- run = ':TSUpdate',
-        },
-        config = function(_, opts)
-            ---@diagnostic disable-next-line: missing-fields
-            require('nvim-treesitter.configs').setup(opts)
+        config = function()
+            local nts = require('nvim-treesitter')
 
-            require('nvim-treesitter.install').prefer_git = false
+            nts.setup({
+                install_dir = vim.fn.stdpath('data') .. '/site',
+            })
 
-            local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
-            parser_config.sql = {
-                install_info = {
-                    url = 'https://github.com/DerekStride/tree-sitter-sql', -- local path or git repo
-                    files = { 'src/parser.c', 'src/scanner.c' },            -- note that some parsers also require src/scanner.c or src/scanner.cc
-                    -- optional entries:
-                    branch = 'gh-pages',                                    -- default branch in case of git repo if different from master
+            vim.api.nvim_create_autocmd('User', {
+                pattern = 'TSUpdate',
+                callback = function()
+                    require('nvim-treesitter.parsers').sql = {
+                        install_info = {
+                            url = 'https://github.com/DerekStride/tree-sitter-sql',
+                            files = { 'src/parser.c', 'src/scanner.c' },
+                            branch = 'gh-pages',
+                        },
+                    }
+                end,
+            })
 
-                    -- generate_requires_npm = false,
-                    -- requires_generate_from_grammar = true, -- if folder contains pre-generated src/parser.c
-                },
-                vim.treesitter.language.register('sql', 'sql'),
-                filetype = 'sql', -- if filetype does not match the parser name
+            vim.treesitter.language.register('sql', 'sql')
+
+            local parsers = {
+                'bash',
+                'diff',
+                'html',
+                'lua',
+                'luadoc',
+                'markdown',
+                'markdown_inline',
+                'query',
+                'vim',
+                'vimdoc',
+                'jsdoc',
+                'sql',
+                'yaml',
             }
 
-            -- {lang}        (`string`) Language to use for the query
-            -- {query_name}  (`string`) Name of the query (e.g., "highlights")
-            -- {text}        (`string`) Query text (unparsed).
-            -- set({lang}, {query_name}, {text})                 *vim.treesitter.query.set()*
-            --     Sets the runtime query named {query_name} for {lang}
-            --
-            --vim.treesitter.query.set(
-            --    'go',
-            --    'folds',
-            --    [[;; inherits: go
-            --      ;; extends
+            nts.install(parsers)
 
-            --    ;(type_identifier) @type
-            --]]
-            --)
+            vim.api.nvim_create_autocmd('FileType', {
+                pattern = parsers,
+                callback = function(args)
+                    local ft = vim.bo[args.buf].filetype
 
-            -- There are additional nvim-treesitter modules that you can use to interact
-            -- with nvim-treesitter. You should go explore a few and see what interests you:
-            -- Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-            -- Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+                    -- old highlight.enable = true
+                    pcall(vim.treesitter.start, args.buf)
+
+                    -- old indent.enable = true, disable = { 'ruby', 'go' }
+                    if ft ~= 'ruby' and ft ~= 'go' then
+                        vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                    end
+                end,
+            })
         end,
     },
     -- colorscheme
