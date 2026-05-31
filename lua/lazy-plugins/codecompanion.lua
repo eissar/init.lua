@@ -17,7 +17,7 @@ end
 local prompt_library = {
     markdown = {
         dirs = {
-            vim.fn.stdpath('config') .. '/codecompanion-prompts'
+            vim.fn.stdpath('config') .. '/cc_prompts'
 
         }
     },
