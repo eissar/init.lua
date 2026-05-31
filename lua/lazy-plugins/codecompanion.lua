@@ -15,6 +15,12 @@ if log_override.proxy_enabled and log_override.enabled then
 end
 
 local prompt_library = {
+    markdown = {
+        dirs = {
+            vim.fn.stdpath('config') .. '/codecompanion-prompts'
+
+        }
+    },
     ['Inline Document'] = {
         strategy = 'inline',
         description = 'Add documentation for code.',
@@ -261,6 +267,12 @@ local opts = {
         },
     },
     display = {
+        action_palette = {
+            opts = {
+                show_preset_prompts = false,
+            }
+        },
+
         diff = {
             provider = 'mini_diff',
             provider_opts = {
@@ -269,12 +281,9 @@ local opts = {
                 },
             },
         },
-        action_palette = {
-            show_default_prompt_library = false, -- Show the default prompt library in the action palette?
-        },
-        chat = {
-            -- show_settings = true,
-        },
+        -- chat = {
+        -- show_settings = true,
+        -- },
     },
     prompt_library = prompt_library,
 }

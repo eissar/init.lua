@@ -286,3 +286,10 @@ end, {
     desc     = 'Run :grep and show results in Telescope',
     complete = 'file',
 })
+
+vim.api.nvim_create_user_command('ReadCmd', function(opts)
+    local lines = vim.split(vim.fn.execute(opts.args), '\n', { plain = true })
+    vim.api.nvim_put(lines, 'l', true, true)
+end, {
+    nargs = '+',
+})
