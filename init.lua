@@ -216,9 +216,9 @@ require('lazy').setup({
         build = ':TSUpdate',
 
         config = function()
-            local nts = require('nvim-treesitter')
+            local tsitter = require('nvim-treesitter')
 
-            nts.setup({
+            tsitter.setup({
                 install_dir = vim.fn.stdpath('data') .. '/site',
             })
 
@@ -251,14 +251,18 @@ require('lazy').setup({
                 'jsdoc',
                 'sql',
                 'yaml',
+                'javascript',
+                'typescript',
+                'tsx',
             }
 
-            nts.install(parsers)
+            tsitter.install(parsers)
 
             vim.api.nvim_create_autocmd('FileType', {
                 pattern = parsers,
                 callback = function(args)
                     local ft = vim.bo[args.buf].filetype
+                    vim.bo[args.buf].syntax = 'off'
 
                     -- old highlight.enable = true
                     pcall(vim.treesitter.start, args.buf)
